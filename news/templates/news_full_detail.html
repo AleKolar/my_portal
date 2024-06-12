@@ -1,0 +1,14 @@
+{% extends 'flatpages/default.html' %}
+{% load censor %}
+
+<html>
+<head>
+    <title>{{ post.title|censor }}</title>
+</head>
+<body>
+    <h1>{{ post.title|censor }}</h1>
+    <p>{{ post.content|censor }}</p>
+    <p>Published on: {{ post.publish_date }}</p>
+</body>
+</html>
+
