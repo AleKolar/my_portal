@@ -2,13 +2,16 @@ from .models import Post
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 
+def index(request):
+    return render(request, 'index.html')
 
 def news_full_detail(request, id):
     post = Post.objects.get(pk=id)
     post_info = {
         'title': post.title,
         'content': post.content,
-        'publish_date': post.created_at.strftime('%d.%m.%Y')
+        'publish_date': post.created_at.strftime('%d.%m.%Y'),
+        'author': post.author,
     }
     return render(request, 'news_full_detail.html', {'post': post_info})
 

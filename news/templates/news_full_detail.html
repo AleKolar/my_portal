@@ -1,14 +1,16 @@
 {% extends 'flatpages/default.html' %}
 {% load censor %}
 
-<html>
-<head>
-    <title>{{ post.title|censor }}</title>
-</head>
-<body>
-    <h1>{{ post.title|censor }}</h1>
-    <p>{{ post.content|censor }}</p>
-    <p>Published on: {{ post.publish_date }}</p>
-</body>
-</html>
+
+{% block content %}
+<h1>___News___</h1>
+
+    <h2>What you are looking for is {{ post.title|censor }}</h2>
+    <p>It says about: {{ post.content|censor }}</p>
+    <p>Publish Date: {{ post.publish_date }}</p>
+    {% if post.author %}
+    <p>Author: {{ post.author }}</p>
+    {% endif %}
+
+{% endblock %}
 
