@@ -3,6 +3,7 @@ from . import views
 
 
 urlpatterns = [
+    # ЭТО ВСЕ МНЕ НУЖНО ДЛЯ ВИЗУАЛИЗАЦИИ И ЗАКРЕПЛЕНИЯ МАТЕРИАЛА
     #path('news_full_detail/<int:id>', views.news_full_detail, name='news_full_detail'),
     path('news/', views.NewsListView.as_view(), name='news_list'),
     #path('news/<int:pk>/', views.NewsDetailView.as_view(), name='news_detail'),
@@ -12,6 +13,10 @@ urlpatterns = [
     #path('news/<int:pk>/', views.NewsDetailView.as_view(), name='news_detail'),
     path('', views.index, name='index'),
     path('<int:id>/', views.news_full_detail, name='news_full_detail'),
+
+
+    # Я ,случайно, на этапе работы над ДЗ увидел, как создать динамическую страницу и сделал
+    path('<int:id>/', views.NewsDetailView.as_view(), name='news_full_detail'),
 ]
 
 

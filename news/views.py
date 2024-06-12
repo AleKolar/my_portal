@@ -23,7 +23,7 @@ class NewsListView(ListView):
 
 class NewsDetailView(DetailView):
     model = Post
-    template_name = 'news_detail.html'
+    template_name = 'news_full_detail.html'
     context_object_name = 'news'
 
 
