@@ -23,8 +23,7 @@ from news import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     #path("news/", include("django.contrib.flatpages.urls")),
-    path('', include('news.urls')), # для 1, 2
-    #path('/<int:id>/', views.news_full_detail, name='news_full_detail'), # для 3
+    path('', include('news.urls')), 
     path('news/<int:id>/', views.news_full_detail, name='news_full_detail'),
 
 ]
