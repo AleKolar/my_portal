@@ -14,8 +14,6 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('<int:id>/', views.news_full_detail, name='news_full_detail'),
 
-
-    # Я ,случайно, на этапе работы над ДЗ увидел, как создать динамическую страницу и сделал
     path('<int:id>/', views.NewsDetailView.as_view(), name='news_full_detail'),
 ]
 

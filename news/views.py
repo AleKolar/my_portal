@@ -18,7 +18,7 @@ def news_full_detail(request, id):
 class NewsListView(ListView):
     model = Post
     template_name = 'news_list.html'
-    queryset = Post.objects.filter(post_type='news').order_by('-created_at')[:21]
+    #queryset = Post.objects.filter(post_type='news').order_by('-created_at')[:21]
     context_object_name = 'news'
 
 class NewsDetailView(DetailView):
