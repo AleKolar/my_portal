@@ -15,23 +15,6 @@ def news_full_detail(request, id):
     }
     return render(request, 'news_full_detail.html', {'post': post_info})
 
-
-# def news_list(request):
-#     news = Post.objects.filter(post_type='news').order_by('-created_at')
-#     return render(request, 'news_list.html', {'news': news})
-
-# def news_full_detail(request):
-#     posts = Post.objects.order_by('-created_at')
-#     posts_info = []
-#     for post in posts:
-#         post_info = {
-#             'title': post.title,
-#             'publish_date': post.created_at,
-#             'content_excerpt': post.content[:20]
-#         }
-#         posts_info.append(post_info)
-#     return render(request, 'news_full_detail.html', {'news_posts': posts_info})
-
 class NewsListView(ListView):
     model = Post
     template_name = 'news_list.html'
