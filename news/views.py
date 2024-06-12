@@ -30,7 +30,8 @@ class NewsDetailView(DetailView):
 class PostsListView(ListView):
     model = Post
     template_name = 'article_list.html'
-    queryset = Post.objects.filter(post_type='article').order_by('-created_at')[:20]
+    #queryset = Post.objects.filter(post_type='article').order_by('-created_at')[:20]
+    queryset = Post.objects.all().order_by('-created_at')[:20]
     context_object_name = 'article'
 
 class PostsDetailView(DetailView):
