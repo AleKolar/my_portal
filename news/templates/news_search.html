@@ -1,0 +1,28 @@
+{% extends 'flatpages/default.html' %}
+{% load censor %}
+
+
+{% block content %}
+<h1><+++News+++></h1>
+
+<form method="GET" action="{% url 'news_search' %}">
+    <input type="text" name="title" placeholder="Название">
+    <input type="text" name="author" placeholder="Автор">
+    <input type="date" name="created_at" placeholder="Дата публикации">
+    <button type="submit">Поиск</button>
+</form>
+
+{% for post in posts %}
+    <div>
+        <h2>{{ post.title|censor }}</h2>
+        <p>{{ post.content|censor }}</p>
+        <p>Автор: {{post.author}}</p>
+        <p>Дата публикации: {{post.created_at}}</p>
+    </div>
+{% empty %}
+    <p>Новости не найдены</p>
+{% endfor %}
+{% endblock content %}
+
+
+

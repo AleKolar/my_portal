@@ -27,4 +27,6 @@ urlpatterns = [
     #path('/<int:id>/', views.news_full_detail, name='news_full_detail'), # для 3
     path('news/<int:id>/', views.news_full_detail, name='news_full_detail'),
 
+    path('news/news_search/', views.news_search, name='news_search'),
+
 ]

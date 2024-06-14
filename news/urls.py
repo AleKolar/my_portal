@@ -14,7 +14,10 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('<int:id>/', views.news_full_detail, name='news_full_detail'),
 
-    path('<int:id>/', views.NewsDetailView.as_view(), name='news_full_detail'),
+    ##path('<int:id>/', views.NewsDetailView.as_view(), name='news_full_detail'),
+
+    path('news_search/', views.news_search, name='news_search'),
+
 ]
 
 
