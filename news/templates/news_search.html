@@ -1,5 +1,6 @@
 {% extends 'flatpages/default.html' %}
 {% load censor %}
+{% load custom_tags %}
 
 <h1>HomePage</h1>
 
@@ -41,7 +42,7 @@
    {% endif %}
 
 {% if page_obj.has_previous %}
-       <a href="?page=1">1</a>
+       <a href="?{% url_replace page=1 %}">1</a>
        {% if page_obj.previous_page_number != 1 %}
            ...
            <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>

@@ -71,7 +71,7 @@ class NewsDetailView(DetailView):
 
 class PostsListView(ListView):
     model = Post
-    ordering = 'created_at'
+    ordering = 'authorname', 'created_at'
     template_name = 'news_search.html'
     #queryset = Post.objects.filter(post_type='article').order_by('-created_at')[:20]
     ###queryset = Post.objects.all().order_by('-created_at')
@@ -87,7 +87,10 @@ class PostsListView(ListView):
         # чтобы потом добавить в контекст и использовать в шаблоне.
         self.filterset = PostFilter(self.request.GET, queryset)
         # Возвращаем из функции отфильтрованный список товаров
-        return self.filterset.qs
+        #return self.filterset.qs
+        if self.filterset.is_bound and self.filterset.is_valid():
+            queryset = self.filterset.qs
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -98,5 +101,5 @@ class PostsListView(ListView):
 
 class ProductDetail(DetailView):
     model = Post
-    template_name = 'news_full_detail.html'
+    template_name = 'news_search.html'
     context_object_name = 'posts'
