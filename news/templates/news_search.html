@@ -2,7 +2,9 @@
 {% load censor %}
 {% load custom_tags %}
 
+{% block title %}
 <h1>HomePage</h1>
+{% endblock title %}
 
 <form action="{% url 'search_results' %}" method="get">
   <input name="q" type="text" placeholder="Search...">
@@ -40,6 +42,7 @@
    {% else %}
        <h2>Новостей нет!</h2>
    {% endif %}
+
 
 {% if page_obj.has_previous %}
        <a href="?{% url_replace page=1 %}">1</a>

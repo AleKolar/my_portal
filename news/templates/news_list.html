@@ -2,7 +2,7 @@
 {% load censor %}
 
 {% block content %}
-<<<<<<< HEAD
+
 <h1><***News***></h1>
 {% for post in posts %}
 <a href="{% url 'news_full_detail' id=post.id %}" class="btn btn-warning">Подробнее
@@ -39,6 +39,7 @@
 
 {% endblock content %}
 =======
+{% block newcontent %}
 <h1><+++News+++></h1>
 {% for post in posts %}
     <a href="{% url 'news_full_detail' id=post.id %}" class="btn btn-warning">Подробнее
