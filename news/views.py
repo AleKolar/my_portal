@@ -1,5 +1,5 @@
 from django.db.models import Q
-
+from pydantic import generics
 from .filters import PostFilter
 from .models import Post
 from django.shortcuts import render
@@ -103,3 +103,5 @@ class ProductDetail(DetailView):
     model = Post
     template_name = 'news_search.html'
     context_object_name = 'posts'
+
+

@@ -38,7 +38,7 @@ class Post(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
     rating = models.IntegerField(default=0)
-    authorname = models.CharField(max_length=255)
+    authorname = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
         return f'{self.authorname}: {self.content[:21]}'
