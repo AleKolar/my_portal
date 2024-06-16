@@ -38,9 +38,10 @@ class Post(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
     rating = models.IntegerField(default=0)
+    authorname = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.content
+        return f'{self.authorname}: {self.content[:21]}'
 
     def like(self):
         self.rating += 1

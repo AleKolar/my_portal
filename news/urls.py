@@ -16,7 +16,7 @@ urlpatterns = [
 
     ##path('<int:id>/', views.NewsDetailView.as_view(), name='news_full_detail'),
 
-    path('news_search/', views.news_search, name='news_search'),
+    path('news_search/', views.PostsListView.as_view(), name='news_search'),
 
 ]
 
