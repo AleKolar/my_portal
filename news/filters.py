@@ -29,9 +29,9 @@ class PostFilter(FilterSet):
     class Meta:
         model = Post
         fields = [
-            'created_at',
+            'date',
             'title',
-            'authorname']
+            'author']
 # class PostFilter(FilterSet):
 #    class Meta:
 #
