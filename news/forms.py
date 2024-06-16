@@ -7,9 +7,9 @@ class PostFilter(forms.ModelForm):
     class Meta:
         model = Post
 
-        fields = {
-            'title': ['icontains'],
-            'authorname': ['icontains'],
-            'created_at': ['gt'],
+        fields = [
+            'title',
+            'authorname',
+            'created_at',
 
-        }
+        ]
