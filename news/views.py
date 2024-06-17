@@ -1,9 +1,13 @@
-from django.db.models import Q
-from pydantic import generics
+from urllib import request
+
+from django.urls import reverse
+
 from .filters import PostFilter
+from .forms import PostForm
 from .models import Post
-from django.shortcuts import render
-from django.views.generic import ListView, DetailView
+from django.shortcuts import render, redirect
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
+
 
 def index(request):
     return render(request, 'index.html')
@@ -27,14 +31,6 @@ class NewsListView(ListView):
     context_object_name = 'posts' # разбираюсь с постраничным выводом
     paginate_by = 10# разбираюсь с постраничным выводом
 
-class NewsDetailView(DetailView):
-    model = Post
-    template_name = 'news_full_detail.html'
-    context_object_name = 'news'
-
-
-
-
 
 # def news_search(request):
 #     if request.method == 'GET':
@@ -57,17 +53,6 @@ class NewsDetailView(DetailView):
 #
 #         return render(request, 'news_search.html', context)
 
-
-# def news_search(request):
-#     q = request.GET.get('q') if request.GET.get('q') != None else ''
-#     filtered_posts = Post.objects.filter(
-#         Q(title__contains=q) |
-#         Q(authorname__contains=q) |
-#         Q(created_at__icontains=q)
-#     )
-#     posts = Post.objects.all()
-#     context = {'filtered_posts': filtered_posts, 'posts': posts}
-#     return render(request, 'news_search.html', context)
 
 class PostsListView(ListView):
     model = Post
@@ -104,4 +89,23 @@ class ProductDetail(DetailView):
     template_name = 'news_search.html'
     context_object_name = 'posts'
 
+
+class PostCreate(CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'create.html'
+
+    def form_valid(self, form):
+        post = form.save(commit=False)
+        if self.request.path == '/news/create/':
+            form.instance.post_type = 'news'
+            return super().form_valid(form)
+        else:
+            form.instance.post_type = 'article'
+            return super().form_valid(form)
+
+class PostUpdate(UpdateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'edit.html'
 

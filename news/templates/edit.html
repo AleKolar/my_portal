@@ -1,0 +1,16 @@
+{% extends 'flatpages/default.html' %}
+{% load censor %}
+
+{% block content %}
+
+    <div>
+      <h3>Edit:</h3>
+    </div>
+
+	<form method="post">
+		{% csrf_token %}
+		<input class="btn btn-secondary" type="submit" value="Save">
+	</form>
+    <input type=button value="Back" class="btn btn-secondary" onClick="javascript:history.go(-1);">
+
+{% endblock content %}

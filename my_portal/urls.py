@@ -28,4 +28,8 @@ urlpatterns = [
 
     path('news/news_search/', views.PostsListView.as_view(), name='news_search'),
 
+    path('news/create/', views.PostCreate.as_view(), name='create'),
+
+    path('news/<int:pk>/edit', views.PostUpdate.as_view()),
+
 ]
