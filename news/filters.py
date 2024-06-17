@@ -1,4 +1,4 @@
-from django_filters import FilterSet, DateFilter, CharFilter
+from django_filters import FilterSet, DateFilter, CharFilter, ChoiceFilter
 from django.forms import DateInput
 
 from .models import Post
@@ -20,10 +20,18 @@ class PostFilter(FilterSet):
         label='Название',
         lookup_expr='icontains',
     )
+
+
     author = CharFilter(
         field_name='authorname',
         label='Автор',
         lookup_expr='icontains',
+    )
+
+    post_type = ChoiceFilter(
+        field_name='post_type',
+        label='Тип поста',
+        choices=Post.POST_TYPES,
     )
 
     class Meta:
@@ -31,7 +39,9 @@ class PostFilter(FilterSet):
         fields = [
             'date',
             'title',
-            'author']
+            'author',
+            'post_type',
+        ]
 # class PostFilter(FilterSet):
 #    class Meta:
 #

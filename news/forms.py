@@ -12,7 +12,8 @@ class PostForm(forms.ModelForm):
             'title',
             'authorname',
             'content',
-            'author'
+            'author',
+
         ]
 
         # def clean(self):
@@ -31,4 +32,5 @@ class PostForm(forms.ModelForm):
         self.fields['title'].label = "Название"
         self.fields['content'].label = "Текст публикации:"
         self.fields['author'].label = "id"
+
 

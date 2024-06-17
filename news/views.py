@@ -22,14 +22,41 @@ def news_full_detail(request, id):
     }
     return render(request, 'news_full_detail.html', {'post': post_info})
 
+def articles_full_detail(request, id):
+    post = Post.objects.get(pk=id)
+    post_info = {
+        'title': post.title,
+        'content': post.content,
+        'publish_date': post.created_at.strftime('%d.%m.%Y'),
+        'author': post.authorname,
+    }
+    return render(request, 'articles_full_detail.html', {'post': post_info})
+
+
 class NewsListView(ListView):
     model = Post
     template_name = 'news_list.html'
-    #ordering = ['title', 'author', '-created_at'] # разбираюсь с постраничным выводом
-    #queryset = Post.objects.filter(post_type='news').order_by('-created_at')
-    queryset = Post.objects.all().order_by('-created_at') # разбираюсь с постраничным выводом
-    context_object_name = 'posts' # разбираюсь с постраничным выводом
-    paginate_by = 10# разбираюсь с постраничным выводом
+    queryset = Post.objects.filter(post_type='news').order_by('-created_at')
+    context_object_name = 'posts'
+    paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter'] = PostFilter(self.request.GET, queryset=self.get_queryset())
+        return context
+
+
+class ArticlesListView(ListView):
+    model = Post
+    template_name = 'articles_list.html'
+    queryset = Post.objects.filter(post_type='articles').order_by('-created_at')
+    context_object_name = 'posts'
+    paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter'] = PostFilter(self.request.GET, queryset=self.get_queryset())
+        return context
 
 
 # def news_search(request):
@@ -63,15 +90,8 @@ class PostsListView(ListView):
     context_object_name = 'posts'
     paginate_by = 2
     def get_queryset(self):
-        # Получаем обычный запрос
         queryset = super().get_queryset()
-        # Используем наш класс фильтрации.
-        # self.request.GET содержит объект QueryDict, который мы рассматривали
-        # в этом юните ранее.
-        # Сохраняем нашу фильтрацию в объекте класса,
-        # чтобы потом добавить в контекст и использовать в шаблоне.
         self.filterset = PostFilter(self.request.GET, queryset)
-        # Возвращаем из функции отфильтрованный список товаров
         #return self.filterset.qs
         if self.filterset.is_bound and self.filterset.is_valid():
             queryset = self.filterset.qs
@@ -84,10 +104,10 @@ class PostsListView(ListView):
         return context
 
 
-class ProductDetail(DetailView):
-    model = Post
-    template_name = 'news_search.html'
-    context_object_name = 'posts'
+# class ProductDetail(DetailView):
+#     model = Post
+#     template_name = 'news_search.html'
+#     context_object_name = 'posts'
 
 
 class PostCreate(CreateView):
