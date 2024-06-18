@@ -19,7 +19,7 @@ from django.urls import path, include
 
 from news import views
 
-
+# НАСТРОИЛ, ТАК ЧТОБ ПО СТРАНИЦАМ ПЕРЕМЕЩАТЬСЯ ПОСЛЕДОВАТЕЛЬНО, С РАСЧЕТОМ, ЧТО Я ПРАВИЛЬНО ПОНЯЛ ТЗ
 urlpatterns = [
     path('admin/', admin.site.urls),
     #path("news/", include("django.contrib.flatpages.urls")),
@@ -32,8 +32,11 @@ urlpatterns = [
 
     path('news/<int:pk>/edit', views.PostUpdate.as_view()),
 
+
     path('', include('news.urls')),
 
-    path('', views.index, name='index'),
+    #path('', views.index, name='index'),
+
+    path('edit/', views.PostUpdate.as_view(), name='edit'),
 
     ]
