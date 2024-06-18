@@ -32,7 +32,8 @@ urlpatterns = [
 
     path('news/<int:pk>/edit', views.PostUpdate.as_view()),
 
-
     path('', include('news.urls')),
 
-]
+    path('', views.index, name='index'),
+
+    ]

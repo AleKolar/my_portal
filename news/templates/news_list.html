@@ -38,15 +38,4 @@
 {% endif %}
 
 {% endblock content %}
-=======
-{% block newcontent %}
-<h1><+++News+++></h1>
-{% for post in posts %}
-    <a href="{% url 'news_full_detail' id=post.id %}" class="btn btn-warning">Подробнее
-        <h2>{{ post.title|censor }}</h2>
-    </a>
-    <p><strong>Published:</strong> {{ post.created_at|date:"d.m.Y" }}</p>
-    <p>{{ post.content|slice:":21"|censor }}</p>
-{% endfor %}
-{% endblock %}
->>>>>>> origin/main
+

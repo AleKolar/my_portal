@@ -49,7 +49,7 @@ class NewsListView(ListView):
 class ArticlesListView(ListView):
     model = Post
     template_name = 'articles_list.html'
-    queryset = Post.objects.filter(post_type='articles').order_by('-created_at')
+    queryset = Post.objects.filter(post_type='article').order_by('-created_at')
     context_object_name = 'posts'
     paginate_by = 10
 
@@ -59,7 +59,7 @@ class ArticlesListView(ListView):
         return context
 
 
-# def news_search(request):
+# def news_search(request): # МНЕ ЭТО КАЖЕТСЯ ОЧ. ПРЯМОЛИНЕЙНЫМ ПОДХОДОМ и классным, хотя filtrs то же хорош и не с проста на него ставят
 #     if request.method == 'GET':
 #         title = request.GET.get('title')
 #         author = request.GET.get('authorname')
