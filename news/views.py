@@ -104,11 +104,6 @@ class PostsListView(ListView):
         return context
 
 
-# class ProductDetail(DetailView):
-#     model = Post
-#     template_name = 'news_search.html'
-#     context_object_name = 'posts'
-
 
 class PostCreate(CreateView):
     model = Post
