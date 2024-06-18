@@ -11,6 +11,7 @@ urlpatterns = [
     path('news_search/', views.PostsListView.as_view(), name='news_search'),
     path('news/create/', views.PostCreate.as_view(), name='create'),
     path('news/<int:pk>/edit', views.PostUpdate.as_view(), name='edit'),
+    path('news/<int:pk>/delete/', views.PostDelete.as_view(), name='delete'),
 
 
 
@@ -22,6 +23,8 @@ urlpatterns = [
     path('articles/<int:id>/', views.articles_full_detail, name='articles_full_detail'), # all art
 
     path('articles/<int:pk>/edit', views.PostUpdate.as_view(), name='edit'),
+
+    path('articles/<int:pk>/delete/', views.PostDelete.as_view(), name='delete'),
 
 ]
 

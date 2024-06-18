@@ -1,16 +1,15 @@
-from urllib import request
-
-from django.urls import reverse
 
 from .filters import PostFilter
 from .forms import PostForm
 from .models import Post
 from django.shortcuts import render, redirect
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
 
 
 def index(request):
     return render(request, 'index.html')
+
 
 def news_full_detail(request, id):
     post = Post.objects.get(pk=id)
@@ -21,6 +20,7 @@ def news_full_detail(request, id):
         'author': post.authorname,
     }
     return render(request, 'news_full_detail.html', {'post': post_info})
+
 
 def articles_full_detail(request, id):
     post = Post.objects.get(pk=id)
@@ -85,14 +85,15 @@ class PostsListView(ListView):
     model = Post
     ordering = 'authorname', 'created_at'
     template_name = 'news_search.html'
-    #queryset = Post.objects.filter(post_type='article').order_by('-created_at')[:20]
+    # queryset = Post.objects.filter(post_type='article').order_by('-created_at')[:20]
     ###queryset = Post.objects.all().order_by('-created_at')
     context_object_name = 'posts'
-    paginate_by = 2
+    paginate_by = 10
+
     def get_queryset(self):
         queryset = super().get_queryset()
         self.filterset = PostFilter(self.request.GET, queryset)
-        #return self.filterset.qs
+        # return self.filterset.qs
         if self.filterset.is_bound and self.filterset.is_valid():
             queryset = self.filterset.qs
         return queryset
@@ -102,7 +103,6 @@ class PostsListView(ListView):
         # Добавляем в контекст объект фильтрации.
         context['filterset'] = self.filterset
         return context
-
 
 
 class PostCreate(CreateView):
@@ -119,8 +119,22 @@ class PostCreate(CreateView):
             form.instance.post_type = 'article'
             return super().form_valid(form)
 
+
 class PostUpdate(UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'edit.html'
+
+
+class PostDelete(DeleteView):
+    model = Post
+    form_class = PostForm
+    template_name = 'delete.html'
+
+    def get_success_url(self):
+        post_type = self.object.post_type
+        if post_type == 'news':
+            return reverse_lazy('news_list')
+        elif post_type == 'article':
+            return reverse_lazy('articles_list')
 
