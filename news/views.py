@@ -86,8 +86,6 @@ class PostsListView(ListView):
     model = Post
     ordering = 'authorname', 'created_at'
     template_name = 'news_search.html'
-    # queryset = Post.objects.filter(post_type='article').order_by('-created_at')[:20]
-    ###queryset = Post.objects.all().order_by('-created_at')
     context_object_name = 'posts'
     paginate_by = 10
 
