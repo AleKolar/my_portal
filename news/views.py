@@ -89,6 +89,8 @@ class PostsListView(ListView):
     context_object_name = 'posts'
     paginate_by = 10
 
+
+
     def get_queryset(self):
         queryset = super().get_queryset()
         self.filterset = PostFilter(self.request.GET, queryset)
@@ -99,7 +101,6 @@ class PostsListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Добавляем в контекст объект фильтрации.
         context['filterset'] = self.filterset
         return context
 

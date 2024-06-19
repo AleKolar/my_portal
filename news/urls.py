@@ -16,7 +16,6 @@ urlpatterns = [
 
 
 
-
     path('articles/', views.ArticlesListView.as_view(), name='articles_list'),
 
     path('articles/create/', views.PostCreate.as_view(), name='create'),
