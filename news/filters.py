@@ -41,7 +41,7 @@ class PostFilter(FilterSet):
             'title',
             'author',
             'post_type',
-        ]
+            ]
 # class PostFilter(FilterSet):
 #    class Meta:
 #

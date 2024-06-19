@@ -18,6 +18,7 @@ def news_full_detail(request, id):
         'content': post.content,
         'publish_date': post.created_at.strftime('%d.%m.%Y'),
         'author': post.authorname,
+
     }
     return render(request, 'news_full_detail.html', {'post': post_info})
 
@@ -128,7 +129,7 @@ class PostUpdate(UpdateView):
 
 class PostDelete(DeleteView):
     model = Post
-    form_class = PostForm
+    #form_class = PostForm
     template_name = 'delete.html'
 
     def get_success_url(self):
@@ -137,4 +138,8 @@ class PostDelete(DeleteView):
             return reverse_lazy('news_list')
         elif post_type == 'article':
             return reverse_lazy('articles_list')
+
+
+
+
 
