@@ -15,14 +15,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.contrib.auth.views import LogoutView, LoginView
 from django.urls import path, include
 
+import sign
 from news import views
+from protect.views import IndexView
+from sign.views import logout_user, BaseRegisterView
 
 # Добавил немного последовательности, ТАК ЧТОБ открыл новость ИСПРАВИЛ - не понравилось. УДАЛИЛ, С РАСЧЕТОМ, ЧТО Я ПРАВИЛЬНО ПОНЯЛ ТЗ
 urlpatterns = [
     path('admin/', admin.site.urls),
-    #path("news/", include("django.contrib.flatpages.urls")),
 
     path('news/<int:id>/', views.news_full_detail, name='news_full_detail'),
 
@@ -32,10 +35,7 @@ urlpatterns = [
 
     path('news/<int:pk>/edit', views.PostUpdate.as_view()),
 
-
     path('', include('news.urls')),
-
-    #path('', views.index, name='index'),
 
     path('edit/', views.PostUpdate.as_view(), name='edit'),
 
@@ -44,5 +44,13 @@ urlpatterns = [
     path('<int:pk>/edit', views.PostUpdate.as_view(), name='edit'),
 
     path('<int:pk>/delete', views.PostUpdate.as_view(), name='delete'),
+
+
+    path('', include('sign.urls')),
+
+
+    path('protect/sign/logout/', logout_user),
+
+    path('sign/', include('sign.urls')),
 
     ]

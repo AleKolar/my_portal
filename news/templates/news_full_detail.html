@@ -3,7 +3,7 @@
 
 
 {% block content %}
-<h1>___News___</h1>
+<h1>___{{ post.title|censor }}___</h1>
 
     <h2>What you are looking for is {{ post.title|censor }}</h2>
     <p>It says about: {{ post.content|censor }}</p>

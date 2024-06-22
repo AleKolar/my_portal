@@ -1,9 +1,10 @@
+from django.http import request
 
 from .filters import PostFilter
 from .forms import PostForm
 from .models import Post
-from django.shortcuts import render, redirect
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.shortcuts import render
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 
 
@@ -90,14 +91,10 @@ class PostsListView(ListView):
     paginate_by = 10
 
 
-
     def get_queryset(self):
         queryset = super().get_queryset()
         self.filterset = PostFilter(self.request.GET, queryset)
-        # return self.filterset.qs
-        if self.filterset.is_bound and self.filterset.is_valid():
-            queryset = self.filterset.qs
-        return queryset
+        return self.filterset.qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
