@@ -52,8 +52,4 @@ urlpatterns = [
     path('sign/', include('sign.urls')),
 
 
-
-
-
-
     ]
