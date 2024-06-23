@@ -1,6 +1,7 @@
 
 from django.contrib.auth import logout, login
 from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -22,6 +23,12 @@ class BaseRegisterView(CreateView):
     form_class = BaseRegisterForm
     success_url = '/'
 
+    # def get(self, request, *args, **kwargs):
+    #     if BaseRegisterForm(request) is True:
+    #         return redirect('protect/')
+    #     return redirect('sign/')
+
+
 
 class CustomLogoutView(TemplateView):
     template_name = 'logout.html'
@@ -29,3 +36,5 @@ class CustomLogoutView(TemplateView):
     def get(self, request, *args, **kwargs):
         logout(request)
         return super().get(request, *args, **kwargs)
+
+

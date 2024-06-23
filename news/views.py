@@ -1,4 +1,7 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import request
+from django.utils.decorators import method_decorator
 
 from .filters import PostFilter
 from .forms import PostForm
@@ -34,7 +37,7 @@ def articles_full_detail(request, id):
     }
     return render(request, 'articles_full_detail.html', {'post': post_info})
 
-
+@method_decorator(login_required, name='dispatch') # (1) Попробую так: login_required с dispatch - «точка входа»
 class NewsListView(ListView):
     model = Post
     template_name = 'news_list.html'
@@ -48,7 +51,7 @@ class NewsListView(ListView):
         return context
 
 
-class ArticlesListView(ListView):
+class ArticlesListView(LoginRequiredMixin, ListView): # (2) Попробую так:  Mixin
     model = Post
     template_name = 'articles_list.html'
     queryset = Post.objects.filter(post_type='article').order_by('-created_at')
