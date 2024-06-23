@@ -16,6 +16,9 @@ class Author(models.Model):
         self.rating = post_rating + comment_rating + post_comment_rating
         self.save()
 
+    def __str__(self):
+        return self.user.username
+
     # Как-то не пришлось ей воспользоваться
     def best_user(self):
         best_author = Author.objects.all().order_by('-rating').first()

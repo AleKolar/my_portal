@@ -1,18 +1,17 @@
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
-from django import forms
+
+from news.models import Author
+from django.db import models
 
 
-class BaseRegisterForm(UserCreationForm):
-    email = forms.EmailField(label="Email")
-    first_name = forms.CharField(label="Имя")
-    last_name = forms.CharField(label="Фамилия")
+class Profile(models.Model):
+    author = models.OneToOneField(Author, on_delete=models.CASCADE)
+    bio = models.TextField(blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
 
-    class Meta:
-        model = User
-        fields = ("username",
-                  "first_name",
-                  "last_name",
-                  "email",
-                  "password1",
-                  "password2", )
+    def __str__(self):
+        return f'{self.author.user.username} Profile'
+
+
+
+
+

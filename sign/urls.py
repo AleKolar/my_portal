@@ -34,7 +34,7 @@ urlpatterns = [
     path('login/protect/sign/logout/', CustomLogoutView.as_view()),
 
 
-    path('login/protect/profile/', views.profile_edit, name='profile_edit.html'),
+    path('login/protect/profile/', views.update_profile, name='profile.html'),
 
 
     ]

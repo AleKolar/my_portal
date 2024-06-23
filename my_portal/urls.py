@@ -21,7 +21,7 @@ from django.urls import path, include
 import sign
 from news import views
 from protect.views import IndexView
-from sign.views import BaseRegisterView, CustomLogoutView
+from sign.views import BaseRegisterView, CustomLogoutView, update_profile
 
 # Добавил немного последовательности, ТАК ЧТОБ открыл новость ИСПРАВИЛ - не понравилось. УДАЛИЛ, С РАСЧЕТОМ, ЧТО Я ПРАВИЛЬНО ПОНЯЛ ТЗ
 urlpatterns = [
@@ -63,9 +63,9 @@ urlpatterns = [
 
     path('accounts/signup/protect/', IndexView.as_view()),
 
-    path('accounts/login/protect/', IndexView.as_view())
+    path('accounts/login/protect/', IndexView.as_view()),
 
-
+    path('accounts/signup/protect/profile', update_profile, name='profile.html'),
 
 
     ]
