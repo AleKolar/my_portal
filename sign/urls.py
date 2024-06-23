@@ -3,7 +3,7 @@ from django.contrib.auth.views import LoginView
 
 from protect.views import IndexView
 from sign import views
-from sign.views import BaseRegisterView
+from sign.views import BaseRegisterView, CustomLogoutView
 
 urlpatterns = [
 
@@ -16,10 +16,8 @@ urlpatterns = [
     path('signup/', BaseRegisterView.as_view(template_name='signup.html'),
          name='signup'),
 
-    path('sign/protect/', IndexView.as_view(), name='protect'),
+    path('protect/', IndexView.as_view()),
 
-    path('protect/sign/logout/', views.logout_user),
-
-    path('sign/protect/', include('news.urls'))
+    path('sign/protect/sign/logout/', CustomLogoutView.as_view()),
 
    ]

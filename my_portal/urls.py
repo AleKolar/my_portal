@@ -21,7 +21,7 @@ from django.urls import path, include
 import sign
 from news import views
 from protect.views import IndexView
-from sign.views import logout_user, BaseRegisterView
+from sign.views import BaseRegisterView, CustomLogoutView
 
 # Добавил немного последовательности, ТАК ЧТОБ открыл новость ИСПРАВИЛ - не понравилось. УДАЛИЛ, С РАСЧЕТОМ, ЧТО Я ПРАВИЛЬНО ПОНЯЛ ТЗ
 urlpatterns = [
@@ -46,11 +46,14 @@ urlpatterns = [
     path('<int:pk>/delete', views.PostUpdate.as_view(), name='delete'),
 
 
+
     path('', include('sign.urls')),
 
-
-    path('protect/sign/logout/', logout_user),
-
     path('sign/', include('sign.urls')),
+
+
+
+
+
 
     ]
