@@ -43,7 +43,7 @@ urlpatterns = [
 
     path('<int:pk>/edit', views.PostUpdate.as_view(), name='edit'),
 
-    path('<int:pk>/delete', views.PostUpdate.as_view(), name='delete'),
+    path('<int:pk>/delete', views.PostUpdate.as_view(), name='delete'),     
 
 
     path('', include('sign.urls')),
@@ -57,4 +57,17 @@ urlpatterns = [
     path('login/protect/news/news_search', views.PostsListView.as_view(), name='news_search'),
 
 
+    path('accounts/', include('allauth.urls')),
+
+    path('accounts/logout/logout/', CustomLogoutView.as_view()),
+
+    path('accounts/signup/protect/', IndexView.as_view()),
+
+    path('accounts/login/protect/', IndexView.as_view())
+
+
+
+
     ]
+
+

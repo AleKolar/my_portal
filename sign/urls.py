@@ -2,6 +2,7 @@ from django.template.defaulttags import url
 from django.urls import path, include
 from django.contrib.auth.views import LoginView
 
+from sign import views
 from sign.views import IndexView
 from sign.views import BaseRegisterView, CustomLogoutView
 
@@ -31,6 +32,9 @@ urlpatterns = [
 
 
     path('login/protect/sign/logout/', CustomLogoutView.as_view()),
+
+
+    path('login/protect/profile/', views.profile_edit, name='profile_edit.html'),
 
 
     ]

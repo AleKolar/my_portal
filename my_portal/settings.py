@@ -42,7 +42,14 @@ INSTALLED_APPS = [
     'django.contrib.flatpages',
     'django_filters',
     'protect',
-    'sign'
+    'sign',
+    'allauth.socialaccount.providers.google',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+
+
+
 
 
 ]
@@ -55,7 +62,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware'
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'my_portal.urls'
@@ -71,10 +79,19 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
             ],
         },
     },
 ]
+
+
+AUTHENTICATION_BACKENDS = [
+
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
 
 WSGI_APPLICATION = 'my_portal.wsgi.application'
 
@@ -126,7 +143,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-LOGIN_URL = 'sign/login/'
+#LOGIN_URL = 'sign/login/'
+LOGIN_URL = '/accounts/login/'
 
 LOGIN_REDIRECT_URL = 'protect/'
 
@@ -136,3 +154,9 @@ LOGOUT_REDIRECT_URL = 'logout/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
