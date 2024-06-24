@@ -160,3 +160,14 @@ ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': 'ваш_client_id',
+            'secret': 'ваш_client_secret',
+        }
+    }
+}
+
+ACCOUNT_FORMS = {'signup': 'sign.models.BasicSignupForm'}

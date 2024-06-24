@@ -1,8 +1,10 @@
 {% extends "main.html" %}
 
 {% block content %}
-<h2>Страница авторизованного пользователя {{request.user.username}}</h2>
-<div> Здесь может содержаться персональная информация для каждого пользователя </div>
-
-<button> <a href="sign/logout/">Выйти</a> </button>
+<h2>Страница авторизованного пользователя {{ request.user.username }}</h2>
+<div>Здесь может содержаться персональная информация для каждого пользователя</div>
+{% if is_not_author %}
+<a href="{% url 'upgrade' %}"><button>Хочу Premium!</button></a>
+{% endif %}
+<a href="{% url 'logout' %}"><button>Выйти</button></a>
 {% endblock %}

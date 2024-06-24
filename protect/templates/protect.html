@@ -1,8 +1,29 @@
 {% extends "main.html" %}
 
 {% block content %}
-<h2>Страница авторизованного пользователя {{request.user.username}}</h2>
-<div> Здесь может содержаться персональная информация для каждого пользователя </div>
+<h2>Страница авторизованного пользователя {{ request.user.username }}</h2>
+<div>Здесь может содержаться персональная информация для каждого пользователя</div>
+<a href="{% url 'protect' %}">Upgrade</a>
 
-<button> <a href="sign/logout/">Выйти</a> </button>
+{% if is_not_authors %}
+<button>
+    <a href="sign/upgrade/">Хочу Authors!</a>
+</button>
+{% endif %}
+<button>
+    <a href="sign/logout/">Выйти</a>
+</button>
+
+<!-- Display messages -->
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li>{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
 {% endblock %}
+
+
+

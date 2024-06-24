@@ -1,10 +1,11 @@
 from django import forms
+from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import CreateView
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.shortcuts import render, redirect
 
@@ -16,10 +17,33 @@ from sign.form import ProfileForm
 class IndexView(LoginRequiredMixin, TemplateView):
     template_name = 'protect.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_not_authors'] = not self.request.user.groups.filter(name='authors').exists()
+        return context
 
-# def logout_user(request):
-#     logout(request)
-#     return HttpResponseRedirect(reverse('login'))
+# @login_required
+# def upgrade_me(request):
+#     user = request.user
+#     authors_group = Group.objects.get(name='authors')
+#     is_not_author = not request.user.groups.filter(name='authors').exists()
+#
+#     if request.method == 'POST' and is_not_author:
+#         authors_group.user_set.add(user)
+#         return redirect('/')
+#
+#     return render(request, 'protect.html', {'is_not_author': is_not_author})
+
+
+@login_required
+def upgrade_me(request):
+    user = request.user
+    authors_group = Group.objects.get(name='authors')
+    if not request.user.groups.filter(name='authors').exists():
+        authors_group.user_set.add(user)
+        messages.success(request, 'Вы добавлены в группу authors!')
+    return redirect('/')
+
 
 
 class BaseRegisterForm(UserCreationForm):
@@ -51,6 +75,10 @@ class CustomLogoutView(TemplateView):
     def get(self, request, *args, **kwargs):
         logout(request)
         return super().get(request, *args, **kwargs)
+
+
+def profile_view(request): # Для выхода из Редактора профиля
+    return render(request, 'logout.html')
 
 
 
