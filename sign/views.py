@@ -37,12 +37,16 @@ class IndexView(LoginRequiredMixin, TemplateView):
 
 @login_required
 def upgrade_me(request):
-    user = request.user
-    authors_group = Group.objects.get(name='authors')
-    if not request.user.groups.filter(name='authors').exists():
-        authors_group.user_set.add(user)
-        messages.success(request, 'Вы добавлены в группу authors!')
-    return redirect('/')
+    if request.method == 'POST':
+        authors_group, created = Group.objects.get_or_create(name='authors')
+        if not request.user.groups.filter(name='authors').exists():
+            request.user.groups.add(authors_group)
+            messages.success(request, 'Вы добавлены в группу authors!')
+        else:
+            messages.info(request, 'Вы уже в группе authors.')
+        return redirect('/')
+    else:
+        return redirect('/')
 
 
 

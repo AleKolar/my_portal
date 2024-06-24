@@ -16,22 +16,20 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.contrib.auth.views import LogoutView, LoginView
+from django.contrib.auth.views import LoginView
 
 from django.urls import path, include
 
 
 from news import views
 from protect.views import IndexView
-from sign.views import CustomLogoutView, update_profile, profile_view, upgrade_me, BaseRegisterView
+from sign.views import CustomLogoutView, update_profile,  upgrade_me, BaseRegisterView
 
 # Добавил немного последовательности, ТАК ЧТОБ открыл новость ИСПРАВИЛ - не понравилось. УДАЛИЛ, С РАСЧЕТОМ, ЧТО Я ПРАВИЛЬНО ПОНЯЛ ТЗ
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('news/<int:id>/', views.news_full_detail, name='news_full_detail'),
-
-    path('', IndexView.as_view()),
 
     path('', include('sign.urls')),
 
@@ -57,7 +55,7 @@ urlpatterns = [
     path('login/',  LoginView.as_view(template_name='login.html', success_url='protect.html'),
             name='login'),
 
-    #path('login/', BaseRegisterView.as_view(template_name='signup.html'), name='signup'),
+    path('login/', BaseRegisterView.as_view(template_name='signup.html'), name='signup'),
 
     path('login/protect/', include('news.urls')),
 
@@ -97,13 +95,12 @@ urlpatterns = [
 
     path('accounts/signup/protect/upgrade', upgrade_me, name='upgrade'),
 
-    path('/login/protect/upgrade/protect/', upgrade_me, name='upgrade'),
-
-    path('login/protect/upgrade/', upgrade_me, name='upgrade'),
-
+    # ВОТ ЗДЕЕСЬ
     path('upgrade/', upgrade_me, name='protect'),
+    path('logout/', CustomLogoutView.as_view(), name='logout'),
 
-    #path('upgrade/protect/', upgrade_me, name='protect'),
+
+    path('signup/', BaseRegisterView.as_view(template_name='signup.html'), name='signup'),
 
     ]
 

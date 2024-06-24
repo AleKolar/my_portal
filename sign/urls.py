@@ -34,6 +34,9 @@ urlpatterns = [
 
     path('login/protect/sign/logout/', CustomLogoutView.as_view()),
 
+    # path('upgrade/', upgrade_me, name='protect'),
+    # path('logout/', CustomLogoutView.as_view(), name='logout'),
+
 
 
     ]

@@ -14,7 +14,7 @@ from django.urls import reverse_lazy
 def index(request):
     return render(request, 'index.html')
 
-
+@login_required
 def news_full_detail(request, id):
     post = Post.objects.get(pk=id)
     post_info = {
@@ -26,7 +26,7 @@ def news_full_detail(request, id):
     }
     return render(request, 'news_full_detail.html', {'post': post_info})
 
-
+@login_required
 def articles_full_detail(request, id):
     post = Post.objects.get(pk=id)
     post_info = {
@@ -86,7 +86,7 @@ class ArticlesListView(LoginRequiredMixin, ListView): # (2) Попробую т�
 #         return render(request, 'news_search.html', context)
 
 
-class PostsListView(ListView):
+class PostsListView(LoginRequiredMixin, ListView):
     model = Post
     ordering = 'authorname', 'created_at'
     template_name = 'news_search.html'
@@ -105,7 +105,7 @@ class PostsListView(ListView):
         return context
 
 
-class PostCreate(CreateView):
+class PostCreate(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
     template_name = 'create.html'
@@ -120,13 +120,13 @@ class PostCreate(CreateView):
             return super().form_valid(form)
 
 
-class PostUpdate(UpdateView):
+class PostUpdate(LoginRequiredMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'edit.html'
 
 
-class PostDelete(DeleteView):
+class PostDelete(LoginRequiredMixin, DeleteView):
     model = Post
     #form_class = PostForm
     template_name = 'delete.html'
