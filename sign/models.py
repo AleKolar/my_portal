@@ -17,6 +17,8 @@ class BasicSignupForm(SignupForm): # Автоматическое добавле
 
     def save(self, request):
         user = super(BasicSignupForm, self).save(request)
+        user.email = self.cleaned_data['email']
+        user.save()
         basic_group = Group.objects.get(name='common')
         basic_group.user_set.add(user)
         return user

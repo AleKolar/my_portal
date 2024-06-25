@@ -33,8 +33,7 @@ def upgrade_me(request):
             messages.success(request, 'Вы добавлены в группу authors!')
         else:
             messages.info(request, 'Вы уже в группе authors.')
-            print("Messages added:", messages.get_messages(request))
-            return redirect('/')
+        print("Messages added:", messages.get_messages(request)) # Это мне проверку посоветовали, чтоб отслеживать
         return redirect('/')
     else:
         return redirect('/')

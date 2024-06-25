@@ -10,12 +10,14 @@ ing the URLs and displaying messages:
 <!--<button>
     <a href="protect"> Хочу Authors!</a>
 </button>-->
-
+{% if is_authors %}
+<p>You are in the group.</p>
+{% else %}
 <form method="post" action="{% url 'sign:protect' %}">
     {% csrf_token %}
     <button type="submit">Хочу Authors!</button>
 </form>
-
+{% endif %}
 
 <button>
     <a href="logout">Выйти</a>
