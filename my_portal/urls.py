@@ -16,14 +16,16 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
 
 from django.urls import path, include
 
 
 from news import views
 from protect.views import IndexView
-from sign.views import CustomLogoutView, update_profile,  upgrade_me, BaseRegisterView
+from sign.views import update_profile, upgrade_me, BaseRegisterView, CustomLogoutView
+
+app_name = 'sign'
 
 # Добавил немного последовательности, ТАК ЧТОБ открыл новость ИСПРАВИЛ - не понравилось. УДАЛИЛ, С РАСЧЕТОМ, ЧТО Я ПРАВИЛЬНО ПОНЯЛ ТЗ
 urlpatterns = [
@@ -65,42 +67,52 @@ urlpatterns = [
 
     path('login/protect/news/news_search', views.PostsListView.as_view(), name='news_search'),
 
-    path('sign/logout/', CustomLogoutView.as_view()),
+    ########path('sign/logout/', CustomLogoutView.as_view()),
 
-    path('accounts/', include('allauth.urls')), #####
+    # path('accounts/', include('allauth.urls')), #####
+    #
+    # path('accounts/profile', update_profile, name='profile.html'), #####
+    #
+    # path('accounts/signup/protect/', IndexView.as_view()),
+    #
+    # path('accounts/signup/protect/news/', IndexView.as_view()),
+    #
+    # path('accounts/login/protect/', IndexView.as_view()),
+    #
+    # path('accounts/login/protect/profile', update_profile, name='profile.html'),
+    #
+    # path('accounts/signup/protect/sign/logout/', CustomLogoutView.as_view()),
+    #
+    # path('accounts/signup/protect/profile/', update_profile, name='profile.html'),
+    #
+    # path('accounts/signup/protect/news/', views.NewsListView.as_view()),
+    #
+    # path('accounts/email/news/', views.NewsListView.as_view()),
+    #
+    # path('accounts/email/profile', update_profile, name='profile.html'),
+    #
+    # path('accounts/signin/protect/news/', views.NewsListView.as_view()),
+    #
+    # path('accounts/signin/protect/profile', update_profile, name='profile.html'),
 
-    path('accounts/profile', update_profile, name='profile.html'), #####
-
-    path('accounts/signup/protect/', IndexView.as_view()),
-
-    path('accounts/signup/protect/news/', IndexView.as_view()),
-
-    path('accounts/login/protect/', IndexView.as_view()),
-
-    path('accounts/login/protect/profile', update_profile, name='profile.html'),
-
-    path('accounts/signup/protect/sign/logout/', CustomLogoutView.as_view()),
-
-    path('accounts/signup/protect/profile/', update_profile, name='profile.html'),
-
-    path('accounts/signup/protect/news/', views.NewsListView.as_view()),
-
-    path('accounts/email/news/', views.NewsListView.as_view()),
-
-    path('accounts/email/profile', update_profile, name='profile.html'),
-
-    path('accounts/signin/protect/news/', views.NewsListView.as_view()),
-
-    path('accounts/signin/protect/profile', update_profile, name='profile.html'),
-
-    path('accounts/signup/protect/upgrade', upgrade_me, name='upgrade'),
+    # path('accounts/signup/protect/upgrade', upgrade_me, name='upgrade'),
 
     # ВОТ ЗДЕЕСЬ
     path('upgrade/', upgrade_me, name='protect'),
-    path('logout/', CustomLogoutView.as_view(), name='logout'),
+
+
+
+    path('', CustomLogoutView.as_view(), name='logout'),
+    # not work 405 conflict post, get: path('protect/logout/', LogoutView.as_view(template_name='sign/logout.html'),
+         #name='logout'),
+
 
 
     path('signup/', BaseRegisterView.as_view(template_name='signup.html'), name='signup'),
+
+    path('login/protect/logout', CustomLogoutView.as_view()),
+
+    path('upgrade/protect/', upgrade_me, name='protect'),
 
     ]
 

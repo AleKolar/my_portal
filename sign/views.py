@@ -13,7 +13,7 @@ from django.shortcuts import render, redirect
 from news.models import Author
 from sign.form import ProfileForm
 
-
+# Для п.9 Создать возможность стать автором (быть добавленным в группу authors)
 class IndexView(LoginRequiredMixin, TemplateView):
     template_name = 'protect.html'
 
@@ -22,17 +22,6 @@ class IndexView(LoginRequiredMixin, TemplateView):
         context['is_not_authors'] = not self.request.user.groups.filter(name='authors').exists()
         return context
 
-# @login_required
-# def upgrade_me(request):
-#     user = request.user
-#     authors_group = Group.objects.get(name='authors')
-#     is_not_author = not request.user.groups.filter(name='authors').exists()
-#
-#     if request.method == 'POST' and is_not_author:
-#         authors_group.user_set.add(user)
-#         return redirect('/')
-#
-#     return render(request, 'protect.html', {'is_not_author': is_not_author})
 
 
 @login_required
@@ -44,6 +33,8 @@ def upgrade_me(request):
             messages.success(request, 'Вы добавлены в группу authors!')
         else:
             messages.info(request, 'Вы уже в группе authors.')
+            print("Messages added:", messages.get_messages(request))
+            return redirect('/')
         return redirect('/')
     else:
         return redirect('/')
@@ -72,14 +63,14 @@ class BaseRegisterView(CreateView):
                   "password1",
                   "password2", )
 
-
+# ФУНКЦИЯ ВЫХОДА
 class CustomLogoutView(TemplateView):
     template_name = 'logout.html'
 
     def get(self, request, *args, **kwargs):
         logout(request)
-        return super().get(request, *args, **kwargs)
-
+        #return super().get(request, *args, **kwargs)
+        return redirect('logout/')
 
 def profile_view(request): # Для выхода из Редактора профиля
     return render(request, 'logout.html')
@@ -87,7 +78,7 @@ def profile_view(request): # Для выхода из Редактора про�
 
 
 
-
+# ЭТО РЕДАКТИРОВАНИЕ ПРОФИЛЯ п.1
 @login_required # 1. В классе-представлении редактирования профиля добавить проверку аутентификации.
 def update_profile(request):
     try:
@@ -119,3 +110,4 @@ def update_profile(request):
     }
 
     return render(request, 'profile.html', context)
+

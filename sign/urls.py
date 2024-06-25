@@ -4,8 +4,9 @@ from django.contrib.auth.views import LoginView
 
 from sign import views
 from sign.views import IndexView, upgrade_me
-from sign.views import BaseRegisterView, CustomLogoutView
+from sign.views import BaseRegisterView
 
+app_name = 'sign'
 
 urlpatterns = [
 
@@ -21,7 +22,7 @@ urlpatterns = [
 
     path('protect/', IndexView.as_view()),
 
-    path('sign/login/protect/sign/logout/', CustomLogoutView.as_view()),
+    ######path('sign/login/protect/sign/logout/', CustomLogoutView.as_view()),
 
     #path('protect/', include('news.urls')),
 
@@ -30,13 +31,12 @@ urlpatterns = [
 
     path('login/protect/', IndexView.as_view()),
 
-    path('login/protect/sign/logout', CustomLogoutView.as_view()),
+    #####path('login/protect/sign/logout', CustomLogoutView.as_view()),
 
-    path('login/protect/sign/logout/', CustomLogoutView.as_view()),
+    #####path('login/protect/sign/logout/', CustomLogoutView.as_view()),
 
-    # path('upgrade/', upgrade_me, name='protect'),
-    # path('logout/', CustomLogoutView.as_view(), name='logout'),
-
+    path('upgrade/', upgrade_me, name='protect'),
+    #path('logout/', CustomLogoutView.as_view(), name='logout'),
 
 
     ]

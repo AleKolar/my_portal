@@ -13,7 +13,7 @@ class Profile(models.Model):
         return f'{self.author.user.username} Profile'
 
 
-class BasicSignupForm(SignupForm): # Автоматическое добавление в common
+class BasicSignupForm(SignupForm): # Автоматическое добавление в common п.8
 
     def save(self, request):
         user = super(BasicSignupForm, self).save(request)
