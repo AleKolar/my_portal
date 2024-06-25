@@ -108,11 +108,9 @@ urlpatterns = [
     path('upgrade/', upgrade_me, name='protect'),
 
 
-
     path('', CustomLogoutView.as_view(), name='logout'),
     # not work 405 conflict post, get: path('protect/logout/', LogoutView.as_view(template_name='sign/logout.html'),
          #name='logout'),
-
 
 
     path('signup/', BaseRegisterView.as_view(template_name='signup.html'), name='signup'),
@@ -120,6 +118,8 @@ urlpatterns = [
     path('login/protect/logout/', CustomLogoutView.as_view()),
 
     path('upgrade/protect/', upgrade_me, name='protect'),
+
+    path('accounts/signup/', BaseRegisterView.as_view(template_name='signup.html'), name='signup'), # Автоматичесое добавл. в группу commom
 
 
 

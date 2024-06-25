@@ -21,7 +21,6 @@ urlpatterns = [
 
     path('protect/', IndexView.as_view()),
 
-
     path('protect/', include('news.urls')),
 
     path('login/',  LoginView.as_view(template_name='login.html', success_url='protect.html'),
@@ -31,6 +30,8 @@ urlpatterns = [
 
 
     path('upgrade/', upgrade_me, name='protect'),
+
+
 
 
     ]
