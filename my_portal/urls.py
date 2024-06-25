@@ -110,7 +110,7 @@ urlpatterns = [
 
     path('signup/', BaseRegisterView.as_view(template_name='signup.html'), name='signup'),
 
-    path('login/protect/logout', CustomLogoutView.as_view()),
+    path('login/protect/logout/', CustomLogoutView.as_view()),
 
     path('upgrade/protect/', upgrade_me, name='protect'),
 

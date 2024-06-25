@@ -69,8 +69,8 @@ class CustomLogoutView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         logout(request)
-        #return super().get(request, *args, **kwargs)
-        return redirect('logout/')
+        return super().get(request, *args, **kwargs)
+        #return redirect('logout')
 
 def profile_view(request): # Для выхода из Редактора профиля
     return render(request, 'logout.html')
