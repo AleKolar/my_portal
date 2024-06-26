@@ -23,7 +23,7 @@ from django.urls import path, include
 
 from news import views
 from protect.views import IndexView
-from sign.views import update_profile, upgrade_me, BaseRegisterView, CustomLogoutView
+from sign.views import upgrade_me, BaseRegisterView, CustomLogoutView, update_profile
 
 app_name = 'sign'
 
@@ -72,7 +72,6 @@ urlpatterns = [
 
     path('accounts/', include('allauth.urls')), #####
 
-    path('accounts/profile', update_profile, name='profile.html'), #####
 
     path('accounts/signup/protect/', IndexView.as_view()),
 
@@ -80,11 +79,7 @@ urlpatterns = [
 
     path('accounts/login/protect/', IndexView.as_view()),
 
-    path('accounts/login/protect/profile', update_profile, name='profile.html'),
-
     path('accounts/signup/protect/sign/logout/', CustomLogoutView.as_view()),
-
-    path('accounts/signup/protect/profile/', update_profile, name='profile.html'),
 
     path('accounts/signup/protect/news/', views.NewsListView.as_view()),
 
@@ -122,6 +117,7 @@ urlpatterns = [
     path('accounts/signup/', BaseRegisterView.as_view(template_name='signup.html'), name='signup'), # Автоматичесое добавл. в группу commom
 
 
+    path('profile/', update_profile, name='profile.html'),
 
     ]
 

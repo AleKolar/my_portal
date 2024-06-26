@@ -2,16 +2,17 @@ from django import forms
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import CreateView
 from django.contrib.auth.models import User, Group
-from django.contrib.auth.forms import UserChangeForm, UserCreationForm
-from django.shortcuts import render, redirect
-
-
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.shortcuts import render, redirect, get_object_or_404
 from news.models import Author
 from sign.form import ProfileForm
+from sign.models import Profile
+
 
 # Для п.9 Создать возможность стать автором (быть добавленным в группу authors)
 class IndexView(LoginRequiredMixin, TemplateView):
@@ -23,7 +24,6 @@ class IndexView(LoginRequiredMixin, TemplateView):
         return context
 
 
-
 @login_required
 def upgrade_me(request):
     if request.method == 'POST':
@@ -33,11 +33,10 @@ def upgrade_me(request):
             messages.success(request, 'Вы добавлены в группу authors!')
         else:
             messages.info(request, 'Вы уже в группе authors.')
-        print("Messages added:", messages.get_messages(request)) # Это мне проверку посоветовали, чтоб отслеживать
+        print("Messages added:", messages.get_messages(request))  # Это мне проверку посоветовали, чтоб отслеживать
         return redirect('/')
     else:
         return redirect('/')
-
 
 
 class BaseRegisterForm(UserCreationForm):
@@ -51,8 +50,6 @@ class BaseRegisterView(CreateView):
     form_class = BaseRegisterForm
     success_url = '/'
 
-
-
     class Meta:
         model = User
         fields = ("username",
@@ -60,7 +57,8 @@ class BaseRegisterView(CreateView):
                   "last_name",
                   "email",
                   "password1",
-                  "password2", )
+                  "password2",)
+
 
 # ФУНКЦИЯ ВЫХОДА
 class CustomLogoutView(TemplateView):
@@ -69,16 +67,15 @@ class CustomLogoutView(TemplateView):
     def get(self, request, *args, **kwargs):
         logout(request)
         return super().get(request, *args, **kwargs)
-        #return redirect('logout')
+        # return redirect('logout')
 
-def profile_view(request): # Для выхода из Редактора профиля
+
+def profile_view(request):  # Для выхода из Редактора профиля
     return render(request, 'logout.html')
 
 
-
-
-# ЭТО РЕДАКТИРОВАНИЕ ПРОФИЛЯ п.1
-@login_required # 1. В классе-представлении редактирования профиля добавить проверку аутентификации.
+# п. 1 ЭТО РЕДАКТИРОВАНИЕ ПРОФИЛЯ
+@login_required  # 1. В классе-представлении редактирования профиля добавить проверку аутентификации.
 def update_profile(request):
     try:
         author = request.user.author
@@ -98,7 +95,7 @@ def update_profile(request):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            return redirect('profile')
+            return redirect('protect')
     else:
         user_form = UserChangeForm(instance=request.user)
         profile_form = ProfileForm(instance=profile)
@@ -109,4 +106,3 @@ def update_profile(request):
     }
 
     return render(request, 'profile.html', context)
-

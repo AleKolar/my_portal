@@ -3,7 +3,7 @@ from django.urls import path, include
 from django.contrib.auth.views import LoginView
 
 from sign import views
-from sign.views import IndexView, upgrade_me
+from sign.views import IndexView, upgrade_me, update_profile
 from sign.views import BaseRegisterView
 
 app_name = 'sign'
@@ -32,6 +32,8 @@ urlpatterns = [
     path('upgrade/', upgrade_me, name='protect'),
 
 
+    path('sign/profile/', update_profile, name='profile'),
 
+    path('login/protect/profile/', update_profile, name='edit_profile'),
 
     ]
