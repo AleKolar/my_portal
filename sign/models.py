@@ -1,4 +1,4 @@
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from news.models import Author, Post
 from django.db import models
 from allauth.account.forms import SignupForm
@@ -34,6 +34,7 @@ class Meta:
     ]
 
     @login_required
+    @permission_required('auth.add_user')
     def assign_permissions(self):
         authors_group = Group.objects.get(name='authors')
         content_type = ContentType.objects.get_for_model(Post)
