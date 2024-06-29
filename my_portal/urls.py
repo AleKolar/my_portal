@@ -31,6 +31,12 @@ app_name = 'sign'
 urlpatterns = [
     path('admin/', admin.site.urls),
 
+    path('news/', views.NewsListView.as_view(), name='news_list'),
+
+    #path('news/articles/', views.ArticlesListView.as_view(), name='articles_list'),
+
+    path('/articles/', views.ArticlesListView.as_view(), name='articles_list'),
+
     path('news/<int:id>/', views.news_full_detail, name='news_full_detail'),
 
     path('', include('sign.urls')),

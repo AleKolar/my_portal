@@ -1,6 +1,6 @@
 from django import forms
 
-from news.models import Post
+from news.models import Post, Author
 
 from django.core.exceptions import ValidationError
 
@@ -23,6 +23,13 @@ class PostForm(forms.ModelForm):
         self.fields['title'].label = "Название"
         self.fields['content'].label = "Текст публикации:"
         self.fields['author'].label = "id"
+
+        def save(self, commit=True):
+            post = super().save(commit=False)
+            post.author = Author.objects.get(user=self.instance.author)
+            if commit:
+                post.save()
+            return post
 
     # ЗАКОМИТЕЛ, ТАК КАК В ЗАДАНИИ АВТОВЫБОР POST_TYPE
     #     self.post_type = Post.POST_TYPES

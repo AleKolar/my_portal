@@ -1,0 +1,30 @@
+{% extends 'flatpages/default.html' %}
+{% load censor %}
+
+<!-- ЭТО СГЕНЕРИРОВАЛА SHELL console -->
+<!--<div>-->
+<!--    <label for="id_title">Название:</label>-->
+
+<!--<input type="text" name="title" value="news20" maxlength="255" required id="id_title">-->
+
+<!--</div>-->
+
+<!--  <div>-->
+<!--    <label for="id_authorname">Автор:</label>-->
+
+<!--<input type="text" name="authorname" maxlength="255" id="id_authorname">-->
+
+<!--</div>-->
+
+
+{% block title %} Create The Post {% endblock title %}
+
+{% block content %}
+<h4>Creation</h4>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Save" />
+</form>
+{% endblock content %}
+

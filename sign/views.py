@@ -11,7 +11,7 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.shortcuts import render, redirect, get_object_or_404
 from news.models import Author
 from sign.form import ProfileForm
-from sign.models import Profile
+from sign.models import Profile, BasicSignupForm
 
 
 # Для п.9 Создать возможность стать автором (быть добавленным в группу authors)
@@ -33,7 +33,6 @@ def upgrade_me(request):
             messages.success(request, 'Вы добавлены в группу authors!')
         else:
             messages.info(request, 'Вы уже в группе authors.')
-        print("Messages added:", messages.get_messages(request))  # Это мне проверку посоветовали, чтоб отслеживать
         return redirect('/')
     else:
         return redirect('/')

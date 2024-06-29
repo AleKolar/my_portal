@@ -2,12 +2,12 @@ from django.contrib.auth.decorators import login_required, permission_required
 from news.models import Author, Post
 from django.db import models
 from allauth.account.forms import SignupForm
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import Group, Permission, User
 from django.contrib.contenttypes.models import ContentType
 
 
 
-class BasicSignupForm(SignupForm):
+class BasicSignupForm(SignupForm): # allauth через accounts
     def save(self, request):
         user = super(BasicSignupForm, self).save(request)
         user.email = self.cleaned_data['email']
@@ -39,6 +39,8 @@ class Meta:
         authors_group = Group.objects.get(name='authors')
         content_type = ContentType.objects.get_for_model(Post)
         #authors_group, created = Group.objects.get_or_create(name='authors')
+        user = User.objects.get(username='id')
+        user.groups.add(authors_group)
 
         create_post_permission = Permission.objects.get(content_type=content_type, codename='create_post')
         edit_post_permission = Permission.objects.get(content_type=content_type, codename='edit_post')

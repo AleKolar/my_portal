@@ -1,12 +1,18 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.mail import send_mail
+from django.dispatch import Signal
 from django.http import request
+from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
+from django.utils.html import strip_tags
+from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 
 from .filters import PostFilter
 from .forms import PostForm
-from .models import Post
-from django.shortcuts import render
+from .models import Post, Category, Author
+from django.shortcuts import render, redirect
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 
@@ -37,7 +43,7 @@ def articles_full_detail(request, id):
     }
     return render(request, 'articles_full_detail.html', {'post': post_info})
 
-@method_decorator(login_required, name='dispatch') # (1) Попробую так: login_required с dispatch - «точка входа»
+@method_decorator(login_required, name='dispatch')
 class NewsListView(ListView):
     model = Post
     template_name = 'news_list.html'
@@ -50,8 +56,15 @@ class NewsListView(ListView):
         context['filter'] = PostFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
+    @method_decorator(csrf_exempt)
+    def post(self, request, *args, **kwargs):
+        articles_posts = Post.objects.filter(post_type='news')
+        for post in articles_posts:
+            post.subscribers.add(request.user)
+        return redirect('news_list')
 
-class ArticlesListView(LoginRequiredMixin, ListView): # (2) Попробую так:  Mixin
+
+class ArticlesListView(LoginRequiredMixin, ListView):
     model = Post
     template_name = 'articles_list.html'
     queryset = Post.objects.filter(post_type='article').order_by('-created_at')
@@ -63,27 +76,12 @@ class ArticlesListView(LoginRequiredMixin, ListView): # (2) Попробую т�
         context['filter'] = PostFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
-
-# def news_search(request): # МНЕ ЭТО КАЖЕТСЯ ОЧ. ПРЯМОЛИНЕЙНЫМ ПОДХОДОМ и классным, хотя filtrs то же хорош и не с проста на него ставят
-#     if request.method == 'GET':
-#         title = request.GET.get('title')
-#         author = request.GET.get('authorname')
-#         publish_date = request.GET.get('created_at')
-#
-#         filtered_posts = Post.objects.all()
-#
-#         if title:
-#             filtered_posts = filtered_posts.filter(title__icontains=title)
-#         if author:
-#             filtered_posts = filtered_posts.filter(author__icontains=author)
-#         if publish_date:
-#             filtered_posts = filtered_posts.filter(created_at__gte=publish_date)
-#
-#         context = {
-#             'posts': filtered_posts,
-#         }
-#
-#         return render(request, 'news_search.html', context)
+    @method_decorator(csrf_exempt)
+    def post(self, request, *args, **kwargs):
+        articles_posts = Post.objects.filter(post_type='article')
+        for post in articles_posts:
+            post.subscribers.add(request.user)
+        return redirect('articles_list')
 
 
 class PostsListView(LoginRequiredMixin, ListView):
@@ -104,7 +102,7 @@ class PostsListView(LoginRequiredMixin, ListView):
         context['filterset'] = self.filterset
         return context
 
-
+addpost = Signal()
 class PostCreate(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
@@ -112,12 +110,22 @@ class PostCreate(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         post = form.save(commit=False)
-        if self.request.path == '/news/create/':
-            form.instance.post_type = 'news'
-            return super().form_valid(form)
-        else:
-            form.instance.post_type = 'article'
-            return super().form_valid(form)
+        author, created = Author.objects.get_or_create(user=self.request.user)
+        post.author = author
+        post_type = 'news' if self.request.path == '/news/create/' else 'article'
+        form.instance.post_type = post_type
+        post.save()
+        subscribed_users = post.author.subscribers.all()
+
+        for user in subscribed_users:
+            subject = 'New {} Released!'.format(post_type.capitalize())
+            html_message = render_to_string('email_template.html', {'post': post, 'post_type': post_type})
+            plain_message = strip_tags(html_message)
+            from_email = 'gefest-173@yandex.ru'
+            to_email = user.email
+            send_mail(subject, plain_message, from_email, [to_email], html_message=html_message)
+
+        return super().form_valid(form)
 
 
 class PostUpdate(LoginRequiredMixin, UpdateView):
@@ -139,6 +147,20 @@ class PostDelete(LoginRequiredMixin, DeleteView):
             return reverse_lazy('articles_list')
 
 
-
-
-
+# ПОКА НЕ НАДО , ПОПРОБУЕМ , НЕМНОГО ПО ДРУГОМУ
+# # SO add users for newsletters from me (while adding news)
+# class SubscribeToCategory(View):
+#     def post(self, request, *args, **kwargs):
+#         category_name = request.POST.get('post_type')
+#         user = request.user
+#
+#         if category_name == 'news':
+#             category = Category.objects.get(name='news')
+#             category.subscribers.add(user)
+#             return redirect('news_list')
+#         elif category_name == 'articles':
+#             category = Category.objects.get(name='articles')
+#             category.subscribers.add(user)
+#             return redirect('articles_list')
+#         else:
+#             return redirect('news_list')

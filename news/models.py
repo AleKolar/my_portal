@@ -45,7 +45,7 @@ class Post(models.Model):
     content = models.TextField()
     rating = models.IntegerField(default=0)
     authorname = models.CharField(max_length=255,)
-
+    subscribers = models.ManyToManyField(User, related_name='subscribed_categories', blank=True)
 
 
     def __str__(self):
