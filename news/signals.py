@@ -10,10 +10,10 @@ from .models import Post
 # Электронное письмо отправляется при создании нового сообщения
 # Электронное письмо не отправляется, если сообщение обновлено, а не создано
 
-@receiver(post_save, sender=Post)
-def send_email_on_new_post(sender, instance, created, **kwargs):
-    if created:
-        subject = instance.title
-        message = instance.content[:50]
-        html_message = render_to_string('email_template.html', {'title': instance.title, 'content': instance.content[:50]})
-        send_mail(subject, message, 'gefest-173@yandex.ru', [instance.author.user.email], html_message=html_message)
+# @receiver(post_save, sender=Post)
+# def send_email_on_new_post(sender, instance, created, **kwargs):
+#     if created:
+#         subject = instance.title
+#         message = instance.content[:50]
+#         html_message = render_to_string('email_template.html', {'title': instance.title, 'content': instance.content[:50]})
+#         send_mail(subject, message, 'gefest-173@yandex.ru', [instance.author.user.email], html_message=html_message)

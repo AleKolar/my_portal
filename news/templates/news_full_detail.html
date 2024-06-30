@@ -9,7 +9,7 @@
     <p>It says about: {{ post.content|censor }}</p>
     <p>Publish Date: {{ post.publish_date }}</p>
     {% if post.author %}
-    <p>Author: {{ post.author }}</p>
+    <p>Author: {{ post.authorname }}</p>
     {% endif %}
 
 {% endblock %}

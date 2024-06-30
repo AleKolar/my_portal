@@ -1,17 +1,15 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
-from django.dispatch import Signal
-from django.http import request
+from django.db.models.signals import post_save
+from django.dispatch import Signal, receiver
 from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
-from django.utils.html import strip_tags
-from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from .filters import PostFilter
 from .forms import PostForm
-from .models import Post, Category, Author
+from .models import Post, Category, Author, Subscription
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -103,6 +101,24 @@ class PostsListView(LoginRequiredMixin, ListView):
         return context
 
 addpost = Signal()
+
+@receiver(post_save, sender=Post)
+def send_email_on_new_post(sender, instance, created, **kwargs):
+    if created:
+        subject = instance.title
+        message = instance.content[:50]
+        html_message = render_to_string('email_template.html',
+                                        {'title': instance.title, 'content': instance.content[:50]})
+
+        post_type = 'news' if instance.post_type == 'news' else 'article'
+        subscribers = Subscription.objects.filter(
+            news_subscription=True) if post_type == 'news' else Subscription.objects.filter(article_subscription=True)
+
+        if subscribers.exists():  # Check if there are subscribers with the relevant subscription
+            for subscriber in subscribers:
+                send_mail(subject, message, 'gefest-173@yandex.ru', [subscriber.user.email], html_message=html_message)
+
+
 class PostCreate(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
@@ -115,21 +131,11 @@ class PostCreate(LoginRequiredMixin, CreateView):
         post_type = 'news' if self.request.path == '/news/create/' else 'article'
         form.instance.post_type = post_type
         post.save()
-        subscribed_users = post.author.subscribers.all() # тут как будто на автора публикаций, у статьи в любом случае автор (из-за шаблона). Не трогать!
 
-        for user in subscribed_users:
-            username = user.username  # правильно я ж, от сюда беру
-            subject = 'Здравствуй, {}! Новая статья в твоём любимом разделе!'.format(username)
-            html_message = render_to_string('email_template.html', {'post': post, 'post_type': post_type, 'username': username})
-            plain_message = strip_tags(html_message)
-            article_content = form.cleaned_data['content']
-            trimmed_content = article_content[:50] if len(article_content) > 50 else article_content
-            plain_message += '\n\n' + trimmed_content
-            from_email = 'gefest-173@yandex.ru'
-            to_email = user.email
-            send_mail(subject, plain_message, from_email, [to_email], html_message=html_message)
+        if created:
+            send_email_on_new_post(Post, post, created)
 
-        return super().form_valid(form)
+        return super(PostCreate, self).form_valid(form)
 
 class PostUpdate(LoginRequiredMixin, UpdateView):
     model = Post
@@ -167,3 +173,14 @@ class PostDelete(LoginRequiredMixin, DeleteView):
 #             return redirect('articles_list')
 #         else:
 #             return redirect('news_list')
+
+
+def subscribe_articles(request):
+    if request.method == 'POST':
+        Subscription.objects.create(user=request.user, articles_subscription=True)
+        return redirect('articles_list')
+
+def subscribe_news(request):
+    if request.method == 'POST':
+        Subscription.objects.create(user=request.user, news_subscription=True)
+        return redirect('news_list')

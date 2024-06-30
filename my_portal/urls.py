@@ -17,15 +17,19 @@ Including another URLconf
 
 from django.contrib import admin
 from django.contrib.auth.views import LoginView, LogoutView
+from django.shortcuts import redirect
 
 from django.urls import path, include
 
 
 from news import views
+from news.views import subscribe_news, subscribe_articles
 from protect.views import IndexView
 from sign.views import upgrade_me, BaseRegisterView, CustomLogoutView, update_profile
 
 app_name = 'sign'
+
+
 
 # Добавил немного последовательности, ТАК ЧТОБ открыл новость ИСПРАВИЛ - не понравилось. УДАЛИЛ, С РАСЧЕТОМ, ЧТО Я ПРАВИЛЬНО ПОНЯЛ ТЗ
 urlpatterns = [
@@ -33,9 +37,11 @@ urlpatterns = [
 
     path('news/', views.NewsListView.as_view(), name='news_list'),
 
+    path('confirm_email/', upgrade_me, name='protect'),
+
     #path('news/articles/', views.ArticlesListView.as_view(), name='articles_list'),
 
-    path('/articles/', views.ArticlesListView.as_view(), name='articles_list'),
+    path('articles/', views.ArticlesListView.as_view(), name='articles_list'),
 
     path('news/<int:id>/', views.news_full_detail, name='news_full_detail'),
 
@@ -45,17 +51,17 @@ urlpatterns = [
 
     path('news/create/', views.PostCreate.as_view(), name='create'),
 
-    path('news/<int:pk>/edit', views.PostUpdate.as_view()),
+    path('news/<int:pk>/edit/', views.PostUpdate.as_view()),
 
-    path('//edit', views.PostUpdate.as_view()),
+    path('edit/', views.PostUpdate.as_view()),
 
     path('', include('news.urls')),
 
     path('delete/', views.PostDelete.as_view(), name='delete'),
 
-    path('<int:pk>/edit', views.PostUpdate.as_view(), name='edit'),
+    path('<int:pk>/edit/', views.PostUpdate.as_view(), name='edit'),
 
-    path('<int:pk>/delete', views.PostUpdate.as_view(), name='delete'),
+    path('<int:pk>/delete/', views.PostUpdate.as_view(), name='delete'),
 
 
     #path('', include('sign.urls')),
@@ -75,9 +81,9 @@ urlpatterns = [
 
     ########path('sign/logout/', CustomLogoutView.as_view()),
 
-
     path('accounts/', include('allauth.urls')), #####
 
+    path('confirm-email/', upgrade_me, name='confirm-email'),
 
     path('accounts/signup/protect/', IndexView.as_view()),
 
@@ -109,7 +115,7 @@ urlpatterns = [
     path('upgrade/', upgrade_me, name='protect'),
 
 
-    path('', CustomLogoutView.as_view(), name='logout'),
+    ###path('', CustomLogoutView.as_view(), name='logout'),
     # not work 405 conflict post, get: path('protect/logout/', LogoutView.as_view(template_name='sign/logout.html'),
          #name='logout'),
 
@@ -124,6 +130,9 @@ urlpatterns = [
 
 
     path('profile/', update_profile, name='profile.html'),
+
+    path('subscribe/news/', subscribe_news, name='subscribe_news'),
+    path('subscribe/articles/', subscribe_articles, name='subscribe_articles'),
 
     ]
 
