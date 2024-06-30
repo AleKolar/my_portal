@@ -7,6 +7,9 @@ from .views import addpost
 
 from .models import Post
 
+# Электронное письмо отправляется при создании нового сообщения
+# Электронное письмо не отправляется, если сообщение обновлено, а не создано
+
 @receiver(post_save, sender=Post)
 def send_email_on_new_post(sender, instance, created, **kwargs):
     if created:

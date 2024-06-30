@@ -3,6 +3,13 @@ from django.forms import DateInput
 
 from .models import Post
 
+class AuthorFilter(FilterSet):
+    author = CharFilter(
+        field_name='username',
+        label='Автор',
+        lookup_expr='icontains',
+    )
+
 
 class PostFilter(FilterSet):
     date = DateFilter(

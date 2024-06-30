@@ -115,18 +115,21 @@ class PostCreate(LoginRequiredMixin, CreateView):
         post_type = 'news' if self.request.path == '/news/create/' else 'article'
         form.instance.post_type = post_type
         post.save()
-        subscribed_users = post.author.subscribers.all()
+        subscribed_users = post.author.subscribers.all() # тут как будто на автора публикаций, у статьи в любом случае автор (из-за шаблона). Не трогать!
 
         for user in subscribed_users:
-            subject = 'New {} Released!'.format(post_type.capitalize())
-            html_message = render_to_string('email_template.html', {'post': post, 'post_type': post_type})
+            username = user.username  # правильно я ж, от сюда беру
+            subject = 'Здравствуй, {}! Новая статья в твоём любимом разделе!'.format(username)
+            html_message = render_to_string('email_template.html', {'post': post, 'post_type': post_type, 'username': username})
             plain_message = strip_tags(html_message)
+            article_content = form.cleaned_data['content']
+            trimmed_content = article_content[:50] if len(article_content) > 50 else article_content
+            plain_message += '\n\n' + trimmed_content
             from_email = 'gefest-173@yandex.ru'
             to_email = user.email
             send_mail(subject, plain_message, from_email, [to_email], html_message=html_message)
 
         return super().form_valid(form)
-
 
 class PostUpdate(LoginRequiredMixin, UpdateView):
     model = Post

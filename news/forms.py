@@ -1,35 +1,23 @@
 from django import forms
-
 from news.models import Post, Author
-
-from django.core.exceptions import ValidationError
 
 
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-
-        fields = [
-            'title',
-            'authorname',
-            'content',
-            'author',
-
-        ]
+        fields = ['title', 'author', 'content']
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
         super(PostForm, self).__init__(*args, **kwargs)
-        self.fields['authorname'].label = "Автор"
         self.fields['title'].label = "Название"
         self.fields['content'].label = "Текст публикации:"
-        self.fields['author'].label = "id"
 
-        def save(self, commit=True):
-            post = super().save(commit=False)
-            post.author = Author.objects.get(user=self.instance.author)
-            if commit:
-                post.save()
-            return post
+        if user:
+            author_instance, created = Author.objects.get_or_create(user=user)
+            self.fields['author'].queryset = Author.objects.filter(user=user)
+        else:
+            self.fields['author'].queryset = Author.objects.all()
 
     # ЗАКОМИТЕЛ, ТАК КАК В ЗАДАНИИ АВТОВЫБОР POST_TYPE
     #     self.post_type = Post.POST_TYPES

@@ -169,3 +169,9 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 ACCOUNT_FORMS = {'signup': 'sign.models.BasicSignupForm'}
+
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'gefest-173'
+EMAIL_HOST_PASSWORD = 'mn14071979'
+EMAIL_USE_SSL = True

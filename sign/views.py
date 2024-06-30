@@ -9,7 +9,9 @@ from django.views.generic.edit import CreateView
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.shortcuts import render, redirect, get_object_or_404
-from news.models import Author
+
+from news.forms import PostForm
+from news.models import Author, Post
 from sign.form import ProfileForm
 from sign.models import Profile, BasicSignupForm
 
@@ -24,6 +26,7 @@ class IndexView(LoginRequiredMixin, TemplateView):
         return context
 
 
+
 @login_required
 def upgrade_me(request):
     if request.method == 'POST':
@@ -31,8 +34,18 @@ def upgrade_me(request):
         if not request.user.groups.filter(name='authors').exists():
             request.user.groups.add(authors_group)
             messages.success(request, 'Вы добавлены в группу authors!')
+
+            user_id = request.user.id
+            author, created = Author.objects.get_or_create(user_id=user_id)
+
+            posts = Post.objects.filter(author=None)
+            posts.update(author=author)
+
+            user_name = request.user.username
+
         else:
             messages.info(request, 'Вы уже в группе authors.')
+        print("Messages added:", messages.get_messages(request))  # Это мне проверку посоветовали, чтоб отслеживать
         return redirect('/')
     else:
         return redirect('/')
