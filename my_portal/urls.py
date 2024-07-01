@@ -131,8 +131,8 @@ urlpatterns = [
 
     path('profile/', update_profile, name='profile.html'),
 
-    path('subscribe/news/', subscribe_news, name='subscribe_news'),
-    path('subscribe/articles/', subscribe_articles, name='subscribe_articles'),
+    path('news/', subscribe_news, name='subscribe_news'),
+    path('articles/', subscribe_articles, name='subscribe_articles'),
 
 
     path('news/<int:id>/', views.news_full_detail, name='news_full_detail'),#######

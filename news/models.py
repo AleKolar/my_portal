@@ -105,5 +105,5 @@ class Comment(models.Model):
 class Subscription(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     news_subscription = models.BooleanField(default=False)
-    article_subscription = models.BooleanField(default=False)
+    articles_subscription = models.BooleanField(default=False)
 

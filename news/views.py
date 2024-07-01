@@ -1,8 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.db.models.signals import post_save
 from django.dispatch import Signal, receiver
+from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -115,11 +117,17 @@ def send_email_on_new_post(sender, instance, created, **kwargs):
 
         post_type = 'news' if instance.post_type == 'news' else 'article'
         subscribers = Subscription.objects.filter(
-            news_subscription=True) if post_type == 'news' else Subscription.objects.filter(article_subscription=True)
+            news_subscription=True) if post_type == 'news' else Subscription.objects.filter(articles_subscription=True)
 
         if subscribers.exists():
             for subscriber in subscribers:
-                send_mail(subject, message, 'gefest-173@yandex.ru', [subscriber.user.email], html_message=html_message)
+                try:
+                    user_email = subscriber.user.email
+                    send_mail(subject, message, 'gefest-173@yandex.ru', [user_email], html_message=html_message)
+                except ObjectDoesNotExist:
+                    print(f'User does not exist for subscriber: {subscriber.id}')
+        else:
+            print('No subscribers found')
 
 
 class PostCreate(LoginRequiredMixin, CreateView):
@@ -127,18 +135,34 @@ class PostCreate(LoginRequiredMixin, CreateView):
     form_class = PostForm
     template_name = 'create.html'
 
+    # def form_valid(self, form):
+    #     post = form.save(commit=False)
+    #     author, created = Author.objects.get_or_create(user=self.request.user)
+    #     post.author = author
+    #     post_type = 'news' if self.request.path == '/news/create/' else 'article'
+    #     form.instance.post_type = post_type
+    #     post.save()
+    #
+    #     if created:
+    #         send_email_on_new_post(Post, post, created)
+    #
+    #     return super(PostCreate, self).form_valid(form)
     def form_valid(self, form):
         post = form.save(commit=False)
-        author, created = Author.objects.get_or_create(user=self.request.user)
-        post.author = author
-        post_type = 'news' if self.request.path == '/news/create/' else 'article'
-        form.instance.post_type = post_type
-        post.save()
 
-        if created:
-            send_email_on_new_post(Post, post, created)
+        if self.request.user.is_authenticated:
+            author, created = Author.objects.get_or_create(user=self.request.user)
+            post.author = author
+            post_type = 'news' if self.request.path == '/news/create/' else 'article'
+            form.instance.post_type = post_type
+            post.save()
 
-        return super(PostCreate, self).form_valid(form)
+            if created:
+                send_email_on_new_post(Post, post, created)
+
+            return super(PostCreate, self).form_valid(form)
+        else:
+            return HttpResponse("User is not authenticated. Please log in.")
 
 class PostUpdate(LoginRequiredMixin, UpdateView):
     model = Post
