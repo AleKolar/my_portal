@@ -14,6 +14,7 @@ class PostForm(forms.ModelForm):
         self.fields['content'].label = "Текст публикации:"
         self.fields['authorname'].label = "Автор"
 
+
         # if user:
         #     author_instance, created = Author.objects.get_or_create(user=user)
         #     self.fields['author'].queryset = Author.objects.filter(user=user)

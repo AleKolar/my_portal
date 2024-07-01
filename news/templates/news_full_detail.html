@@ -6,11 +6,9 @@
 
     <h2>What you are looking for is {{ post.title|censor }}</h2>
     <p>It says about: {{ post.content|censor }}</p>
-    <p>Publish Date: {{ post.publish_date }}</p>
+    <p>Publish Date: {{ post.created_at|date:"d.m.Y" }}</p>
     {% if post.author %}
     <p>Автор: {{ post.author }}</p>
     {% endif %}
-
-    <a href="{% url 'news_full_detail' id=post.id %}">Read Full Article</a>
 
 {% endblock %}
