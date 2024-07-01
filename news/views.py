@@ -1,3 +1,4 @@
+from django import template
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
@@ -211,3 +212,9 @@ def subscribe_news(request):
     if request.method == 'POST':
         Subscription.objects.create(user=request.user, news_subscription=True)
         return redirect('news_list')
+
+
+
+
+
+

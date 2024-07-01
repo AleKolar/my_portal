@@ -52,7 +52,10 @@ class Post(models.Model):
         return f'{self.authorname}: {self.content[:21]}'
 
     def get_absolute_url(self):
-        return reverse('news_full_detail', args=[str(self.id)])
+        if self.post_type  == 'news':
+            return reverse('news_full_detail', args=[str(self.id)])
+        else:
+            return reverse('articles_full_detail', args=[str(self.id)])
 
     def like(self):
         self.rating += 1

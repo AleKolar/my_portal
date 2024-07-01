@@ -18,6 +18,7 @@ Including another URLconf
 from django.contrib import admin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.shortcuts import redirect
+from django.template.defaulttags import url
 
 from django.urls import path, include
 
@@ -135,7 +136,9 @@ urlpatterns = [
     path('articles/', subscribe_articles, name='subscribe_articles'),
 
 
-    path('news/<int:id>/', views.news_full_detail, name='news_full_detail'),#######
+    path('news/<int:id>/', views.news_full_detail, name='news_full_detail'),
+
+
 
     ]
 
