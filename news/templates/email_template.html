@@ -5,7 +5,12 @@
     <title>{{ title }}</title>
 </head>
 <body>
+    <h1>Обновление в подписки {{ post.author }}!</h1>
     <h1>{{ title }}</h1>
     <p>{{ content }}</p>
+
+    {% if post_id %}
+        <p>Чтобы прочитать полный текст, перейдите по ссылке: <a href="{{ post_url }}">Прочитать статью</a></p>
+    {% endif %}
 </body>
 </html>

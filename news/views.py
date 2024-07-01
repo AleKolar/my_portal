@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .filters import PostFilter
 from .forms import PostForm
 from .models import Post, Category, Author, Subscription
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 
@@ -28,7 +28,8 @@ def news_full_detail(request, id):
         'author': post.authorname,
 
     }
-    return render(request, 'news_full_detail.html', {'post': post_info})
+    news_article = get_object_or_404(Post, id=id)
+    return render(request, 'news_full_detail.html', {'post': news_article})
 
 @login_required
 def articles_full_detail(request, id):
@@ -39,7 +40,8 @@ def articles_full_detail(request, id):
         'publish_date': post.created_at.strftime('%d.%m.%Y'),
         'author': post.authorname,
     }
-    return render(request, 'articles_full_detail.html', {'post': post_info})
+    news_article = get_object_or_404(Post, id=id)
+    return render(request, 'articles_full_detail.html', {'post': news_article})
 
 @method_decorator(login_required, name='dispatch')
 class NewsListView(ListView):
@@ -100,7 +102,7 @@ class PostsListView(LoginRequiredMixin, ListView):
         context['filterset'] = self.filterset
         return context
 
-addpost = Signal()
+#addpost = Signal()
 
 @receiver(post_save, sender=Post)
 def send_email_on_new_post(sender, instance, created, **kwargs):
@@ -108,13 +110,14 @@ def send_email_on_new_post(sender, instance, created, **kwargs):
         subject = instance.title
         message = instance.content[:50]
         html_message = render_to_string('email_template.html',
-                                        {'title': instance.title, 'content': instance.content[:50]})
+                                        {'title': instance.title, 'content': instance.content[:50],
+                                         'post_url': instance.get_absolute_url(), 'post_id': instance.id})
 
         post_type = 'news' if instance.post_type == 'news' else 'article'
         subscribers = Subscription.objects.filter(
             news_subscription=True) if post_type == 'news' else Subscription.objects.filter(article_subscription=True)
 
-        if subscribers.exists():  # Check if there are subscribers with the relevant subscription
+        if subscribers.exists():
             for subscriber in subscribers:
                 send_mail(subject, message, 'gefest-173@yandex.ru', [subscriber.user.email], html_message=html_message)
 

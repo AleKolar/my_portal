@@ -1,11 +1,11 @@
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.contrib.auth.models import User, Group
-from django.template.loader import render_to_string
-from django.core.mail import EmailMultiAlternatives, send_mail
-from .views import addpost
-
-from .models import Post
+# from django.db.models.signals import post_save
+# from django.dispatch import receiver
+# from django.contrib.auth.models import User, Group
+# from django.template.loader import render_to_string
+# from django.core.mail import EmailMultiAlternatives, send_mail
+# from .views import addpost
+#
+# from .models import Post
 
 # Электронное письмо отправляется при создании нового сообщения
 # Электронное письмо не отправляется, если сообщение обновлено, а не создано

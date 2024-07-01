@@ -1,7 +1,6 @@
 {% extends 'flatpages/default.html' %}
 {% load censor %}
 
-
 {% block content %}
 <h1>___{{ post.title|censor }}___</h1>
 
@@ -9,7 +8,9 @@
     <p>It says about: {{ post.content|censor }}</p>
     <p>Publish Date: {{ post.publish_date }}</p>
     {% if post.author %}
-    <p>Author: {{ post.authorname }}</p>
+    <p>Автор: {{ post.author }}</p>
     {% endif %}
+
+    <a href="{% url 'news_full_detail' id=post.id %}">Read Full Article</a>
 
 {% endblock %}
