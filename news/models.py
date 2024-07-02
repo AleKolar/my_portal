@@ -31,13 +31,18 @@ class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
     post_type = models.ForeignKey('Post', on_delete=models.CASCADE, blank=True)
 
+    CATEGORY_CHOICES = [
+        ('category1', 'Category 1'),
+        ('category2', 'Category 2'),
+    ]
+
 
 class Post(models.Model):
     author = models.ForeignKey('Author', on_delete=models.CASCADE, blank=True)
     POST_TYPES = (
         ('article', 'Article'),
-        ('news', 'News'),
-    )
+        ('news', 'News'),    )
+
     post_type = models.CharField(max_length=10, choices=POST_TYPES)
     created_at = models.DateTimeField(auto_now_add=True)
     categories = models.ManyToManyField('Category', through='PostCategory')
