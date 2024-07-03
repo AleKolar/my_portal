@@ -180,6 +180,22 @@ class PostsListView(LoginRequiredMixin, ListView):
 # addpost = Signal()
 
 
+@receiver(post_save, sender=Post)
+def send_email_on_new_post(sender, instance, created, **kwargs):
+    if created:
+        subject = instance.title
+        message = instance.content[:50]
+        html_message = render_to_string('email_template.html',
+                                        {'title': instance.title, 'content': instance.content[:50]})
+
+        post_type = 'news' if instance.post_type == 'news' else 'article'
+
+        subscribers = instance.subscribers.all()
+
+        if subscribers.exists():  # Check if there are subscribers
+            for subscriber in subscribers:
+                send_mail(subject, message, 'gefest-173@yandex.ru', [subscriber.email], html_message=html_message)
+
 
 class PostCreate(LoginRequiredMixin, CreateView):
     model = Post
@@ -188,48 +204,16 @@ class PostCreate(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         post = form.save(commit=False)
+        author, created = Author.objects.get_or_create(user=self.request.user)
+        post.author = author
+        post_type = 'news' if self.request.path == '/news/create/' else 'article'
+        form.instance.post_type = post_type
+        post.save()
 
-        if self.request.user.is_authenticated:
-            author, created = Author.objects.get_or_create(user=self.request.user)
-            post.author = author
-            post_type = 'news' if self.request.path == '/news/create/' else 'article'
+        if created:
+            send_email_on_new_post(Post, post, created)
 
-            # Restriction: Limit user to three news items per day
-            if post_type == 'news':
-                today = timezone.now().date()
-                user_news_count = Post.objects.filter(author=author, post_type='news', created_at__date=today).count()
-                if user_news_count >= 3:
-                    return HttpResponse("You have reached the limit of news posts for today.")
-
-            form.instance.post_type = post_type
-            post.save()
-
-            # Send message to subscribers
-            self.send_message_to_subscribers(post)
-
-        return super().form_valid(form)
-
-    def send_message_to_subscribers(self, post):
-        subscribers = post.subscribers.all()
-
-        for subscriber in subscribers:
-            sender_email = 'gefest-173@yandex.ru'
-            sender_password = 'Mn14071979'
-
-            msg = MIMEMultipart()
-            msg['From'] = sender_email
-            msg['To'] = subscriber.email
-            msg['Subject'] = f"New {post.post_type.capitalize()} Published: {post.title}"
-
-            body = f"{post.content[:50]}\n\nRead more: {post.post_type}/{post.id}/"
-            msg.attach(MIMEText(body, 'plain'))
-
-            server = smtplib.SMTP_SSL('smtp.yandex.com', 465)
-            server.login(sender_email, sender_password)
-            server.send_message(msg)
-            server.quit()
-
-
+        return super(PostCreate, self).form_valid(form)
 
 
 class PostUpdate(LoginRequiredMixin, UpdateView):
@@ -270,19 +254,26 @@ class PostDelete(LoginRequiredMixin, DeleteView):
 #             return redirect('news_list')
 
 
-def subscribe_articles(request):
-    if request.method == 'POST':
-        Subscription.objects.create(user=request.user, articles_subscription=True)
-        return redirect('articles_list')
-
-
-def subscribe_news(request):
-    if request.method == 'POST':
-        Subscription.objects.create(user=request.user, news_subscription=True)
-        return redirect('news_list')
-
 # def protect_articles(request, id):
 #     return HttpResponse("This is the protected articles page.")
 #
 # def protect_news(request, id):
 #     return HttpResponse("This is the protected articles page.")
+
+
+def subscribe_articles(request):
+    if request.method == 'POST':
+        user = request.user
+        posts = Post.objects.filter(post_type='article')
+        for post in posts:
+            post.subscribers.add(user)
+        return redirect('articles_list')
+
+
+def subscribe_news(request):
+    if request.method == 'POST':
+        user = request.user
+        posts = Post.objects.filter(post_type='news')
+        for post in posts:
+            post.subscribers.add(user)
+        return redirect('news_list')

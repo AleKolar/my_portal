@@ -134,7 +134,7 @@ urlpatterns = [
     path('news/', subscribe_news, name='subscribe_news'),
     path('articles/', subscribe_articles, name='subscribe_articles'),
 
-    path('confirm_email/sign/login/', upgrade_me, name='protect'),
+    path('confirm_email/', upgrade_me, name='protect'),
     path('confirm_email/sign/login/', include('protect.urls')),
     path('confirm_email/sign/login/sign/login/', upgrade_me, name='protect'),
 

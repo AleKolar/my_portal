@@ -23,6 +23,10 @@ urlpatterns = [
 
     path('articles/<int:pk>/delete/', views.PostDelete.as_view(), name='delete'),
 
+    path('subscribe_articles', views.subscribe_articles, name='articles_list'),
+
+    path('subscribe_news', views.subscribe_articles, name='news_list'),
+
 
     ]
 
