@@ -65,7 +65,8 @@ urlpatterns = [
     path('<int:pk>/delete/', views.PostUpdate.as_view(), name='delete'),
 
 
-    #path('', include('sign.urls')),
+    path('accounts/login/protect/logout', LoginView.as_view(template_name='login.html', success_url='protect.html'),
+            name='login'),
 
     path('login/',  LoginView.as_view(template_name='login.html', success_url='protect.html'),
             name='login'),
@@ -134,8 +135,9 @@ urlpatterns = [
     path('articles/', subscribe_articles, name='subscribe_articles'),
 
     path('confirm_email/sign/login/', upgrade_me, name='protect'),
+    path('confirm_email/sign/login/', include('protect.urls')),
     path('confirm_email/sign/login/sign/login/', upgrade_me, name='protect'),
-    path('confirm_email/sign/login/sign/login/sign/login/', upgrade_me, name='protect'),
+
 
     # path('login/protect/news/<int:id>/', views.protect_news, name='protect_news'),
     # path('login/protect/articles/<int:id>/', views.protect_articles, name='protect_articles'),

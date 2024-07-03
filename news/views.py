@@ -18,11 +18,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 
-from .signals import send_email_on_new_post
-
 
 def index(request):
     return render(request, 'index.html')
+
 
 @login_required
 def news_full_detail(request, id):
@@ -36,6 +35,7 @@ def news_full_detail(request, id):
     news_article = get_object_or_404(Post, id=id)
     return render(request, 'news_full_detail.html', {'post': news_article, 'id': id})
 
+
 @login_required
 def articles_full_detail(request, id):
     post = Post.objects.get(pk=id)
@@ -47,7 +47,6 @@ def articles_full_detail(request, id):
     }
     news_article = get_object_or_404(Post, id=id)
     return render(request, 'articles_full_detail.html', {'post': news_article, 'id': id})
-
 
 
 @method_decorator(login_required, name='dispatch')
@@ -98,7 +97,6 @@ class PostsListView(LoginRequiredMixin, ListView):
     context_object_name = 'posts'
     paginate_by = 10
 
-
     def get_queryset(self):
         queryset = super().get_queryset()
         self.filterset = PostFilter(self.request.GET, queryset)
@@ -108,7 +106,6 @@ class PostsListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['filterset'] = self.filterset
         return context
-
 
 
 # @receiver(post_save, sender=Post)
@@ -134,7 +131,7 @@ class PostsListView(LoginRequiredMixin, ListView):
 #         else:
 #             print('No subscribers found')
 
-addpost = Signal()
+# addpost = Signal()
 
 ### from last
 # @receiver(post_save, sender=Post)
@@ -169,24 +166,37 @@ addpost = Signal()
 #         else:
 #             print('No subscribers found')
 
-#addpost = Signal()
+# addpost = Signal()
+
+@receiver(post_save, sender=Post)
+def send_email_on_new_post(sender, instance, created, **kwargs):
+    if created:
+        subject = instance.title
+        message = instance.content[:50]
+        html_message = render_to_string('email_template.html',
+                                        {'title': instance.title, 'content': instance.content[:50],
+                                         'post_url': instance.get_absolute_url(), 'post_id': instance.id})
+
+        post_type = 'news' if instance.post_type == 'news' else 'article'
+        subscribers = Subscription.objects.filter(
+            news_subscription=True) if post_type == 'news' else Subscription.objects.filter(articles_subscription=True)
+
+        if subscribers.exists():
+            for subscriber in subscribers:
+                try:
+                    user_email = subscriber.user.email
+                    send_mail(subject, message, 'gefest-173@yandex.ru', [user_email], html_message=html_message)
+                except ObjectDoesNotExist:
+                    print(f'User does not exist for subscriber: {subscriber.id}')
+        else:
+            print('No subscribers found')
+
+
+
 class PostCreate(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
     template_name = 'create.html'
-
-    # def form_valid(self, form):
-    #     post = form.save(commit=False)
-    #     author, created = Author.objects.get_or_create(user=self.request.user)
-    #     post.author = author
-    #     post_type = 'news' if self.request.path == '/news/create/' else 'article'
-    #     form.instance.post_type = post_type
-    #     post.save()
-    #
-    #     if created:
-    #         send_email_on_new_post(Post, post, created)
-    #
-    #     return super(PostCreate, self).form_valid(form)
 
     def form_valid(self, form):
         post = form.save(commit=False)
@@ -198,14 +208,20 @@ class PostCreate(LoginRequiredMixin, CreateView):
             form.instance.post_type = post_type
             post.save()
 
+            # Create subscription objects for users who have subscriptions to news or articles
+            from django.contrib.auth.models import User
+            subscribers = User.objects.filter(subscribed_categories__news_subscription=(post_type == 'news'),
+                                              subscribed_categories__articles_subscription=(post_type == 'article'))
+            for subscriber in subscribers:
+                Subscription.objects.get_or_create(user=subscriber, news_subscription=(post_type == 'news'),
+                                                    articles_subscription=(post_type == 'article'))
+
             if created:
                 send_email_on_new_post(Post, post, created)
 
             return super(PostCreate, self).form_valid(form)
         else:
             return HttpResponse("User is not authenticated. Please log in.")
-
-
 
 
 class PostUpdate(LoginRequiredMixin, UpdateView):
@@ -216,7 +232,7 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
 
 class PostDelete(LoginRequiredMixin, DeleteView):
     model = Post
-    #form_class = PostForm
+    # form_class = PostForm
     template_name = 'delete.html'
 
     def get_success_url(self):
@@ -246,23 +262,19 @@ class PostDelete(LoginRequiredMixin, DeleteView):
 #             return redirect('news_list')
 
 
-
 def subscribe_articles(request):
     if request.method == 'POST':
         Subscription.objects.create(user=request.user, articles_subscription=True)
         return redirect('articles_list')
+
 
 def subscribe_news(request):
     if request.method == 'POST':
         Subscription.objects.create(user=request.user, news_subscription=True)
         return redirect('news_list')
 
-
-
 # def protect_articles(request, id):
 #     return HttpResponse("This is the protected articles page.")
 #
 # def protect_news(request, id):
 #     return HttpResponse("This is the protected articles page.")
-
-
