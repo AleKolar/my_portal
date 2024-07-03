@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.db import IntegrityError
@@ -10,13 +11,16 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-
 from .filters import PostFilter
 from .forms import PostForm
 from .models import Post, Category, Author, Subscription
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
+from django.http import HttpResponse
+from django.views.generic.edit import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from news.models import Subscription
 
 
 def index(request):
@@ -192,7 +196,6 @@ def send_email_on_new_post(sender, instance, created, **kwargs):
             print('No subscribers found')
 
 
-
 class PostCreate(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
@@ -209,12 +212,13 @@ class PostCreate(LoginRequiredMixin, CreateView):
             post.save()
 
             # Create subscription objects for users who have subscriptions to news or articles
-            from django.contrib.auth.models import User
-            subscribers = User.objects.filter(subscribed_categories__news_subscription=(post_type == 'news'),
-                                              subscribed_categories__articles_subscription=(post_type == 'article'))
+            subscribers = User.objects.filter(subscribed_categories__title=post_type)
+
             for subscriber in subscribers:
-                Subscription.objects.get_or_create(user=subscriber, news_subscription=(post_type == 'news'),
-                                                    articles_subscription=(post_type == 'article'))
+                news_subscription = True if post_type == 'news' else False
+                articles_subscription = True if post_type == 'article' else False
+                Subscription.objects.get_or_create(user=subscriber, news_subscription=news_subscription,
+                                                   articles_subscription=articles_subscription)
 
             if created:
                 send_email_on_new_post(Post, post, created)
