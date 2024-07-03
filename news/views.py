@@ -1,3 +1,7 @@
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
@@ -176,6 +180,7 @@ class PostsListView(LoginRequiredMixin, ListView):
 # addpost = Signal()
 
 
+
 class PostCreate(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
@@ -189,7 +194,7 @@ class PostCreate(LoginRequiredMixin, CreateView):
             post.author = author
             post_type = 'news' if self.request.path == '/news/create/' else 'article'
 
-            # Limit user to three news items per day
+            # Restriction: Limit user to three news items per day
             if post_type == 'news':
                 today = timezone.now().date()
                 user_news_count = Post.objects.filter(author=author, post_type='news', created_at__date=today).count()
@@ -208,13 +213,23 @@ class PostCreate(LoginRequiredMixin, CreateView):
         subscribers = post.subscribers.all()
 
         for subscriber in subscribers:
-            send_mail(
-                f"New {post.post_type.capitalize()} Published: {post.title}",
-                f"{post.content[:50]}\n\nRead more: {post.post_type}/{post.id}/",
-                'gefest-173@yandex.ru',
-                [subscriber.email],
-                fail_silently=False,
-            )
+            sender_email = 'gefest-173@yandex.ru'
+            sender_password = 'Mn14071979'
+
+            msg = MIMEMultipart()
+            msg['From'] = sender_email
+            msg['To'] = subscriber.email
+            msg['Subject'] = f"New {post.post_type.capitalize()} Published: {post.title}"
+
+            body = f"{post.content[:50]}\n\nRead more: {post.post_type}/{post.id}/"
+            msg.attach(MIMEText(body, 'plain'))
+
+            server = smtplib.SMTP_SSL('smtp.yandex.com', 465)
+            server.login(sender_email, sender_password)
+            server.send_message(msg)
+            server.quit()
+
+
 
 
 class PostUpdate(LoginRequiredMixin, UpdateView):
