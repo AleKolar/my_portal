@@ -140,9 +140,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 LOGIN_URL = 'sign/login/'
-#LOGIN_URL = '/accounts/login/'
-#LOGIN_URL = 'protect/'
-#LOGIN_URL = 'login/'
 
 LOGIN_REDIRECT_URL = 'protect/'
 

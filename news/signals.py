@@ -6,12 +6,12 @@ from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.core.signals import request_finished
 from news.models import Post, Subscription
+from django.utils import timezone
+
+from news.views import addpost
 
 
-# Электронное письмо отправляется при создании нового сообщения
-# Электронное письмо не отправляется, если сообщение обновлено, а не создано
-
-@receiver(post_save, sender=Post)
+@receiver(addpost)
 def send_email_on_new_post(sender, instance, created, **kwargs):
     if created:
         subject = instance.title
@@ -20,9 +20,19 @@ def send_email_on_new_post(sender, instance, created, **kwargs):
                                         {'title': instance.title, 'content': instance.content[:50],
                                          'post_url': instance.get_absolute_url(), 'post_id': instance.id})
 
-        post_type = 'news' if instance.post_type == 'news' else 'article'
-        subscribers = Subscription.objects.filter(
-            news_subscription=True) if post_type == 'news' else Subscription.objects.filter(articles_subscription=True)
+        if instance.post_type == 'news':
+            user = instance.author.user
+            today = timezone.now()
+            start_of_day = today.replace(hour=0, minute=0, second=0, microsecond=0)
+            end_of_day = today.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+            news_count = Post.objects.filter(author__user=user, post_type='news', created_at__range=(start_of_day, end_of_day)).count()
+
+            if news_count >= 3:
+                print('limit 3 posts')
+                return
+
+        subscribers = Subscription.objects.filter(news_subscription=True) if instance.post_type == 'news' else Subscription.objects.filter(articles_subscription=True)
 
         if subscribers.exists():
             for subscriber in subscribers:
@@ -34,10 +44,10 @@ def send_email_on_new_post(sender, instance, created, **kwargs):
         else:
             print('No subscribers found')
 
-@receiver(request_finished)
-def send_email_on_request_finished(sender, **kwargs):
-    subject = 'Request Processed Successfully'
-    message = 'Thank you for visiting.'
-    recipient_email = [user_email]
-
-    send_mail(subject, message, 'gefest-173@yandex.ru', recipient_email)
+# @receiver(request_finished)
+# def send_email_on_request_finished(sender, **kwargs):
+#     subject = 'Request Processed Successfully'
+#     message = 'Thank you for visiting.'
+#     recipient_email = [user_email]
+#
+#     send_mail(subject, message, 'gefest-173@yandex.ru', recipient_email)

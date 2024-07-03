@@ -2,10 +2,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
+from django.db import IntegrityError
 from django.db.models.signals import post_save
 from django.dispatch import Signal, receiver
 from django.http import HttpResponse
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
@@ -131,10 +133,58 @@ class PostsListView(LoginRequiredMixin, ListView):
 #             print('No subscribers found')
 
 addpost = Signal()
+
+### from last
+# @receiver(post_save, sender=Post)
+# def send_email_on_new_post(sender, instance, created, **kwargs):
+#     if created:
+#         subject = instance.title
+#         message = instance.content[:50]
+#         html_message = render_to_string('email_template.html',
+#                                         {'title': instance.title, 'content': instance.content[:50],
+#                                          'post_url': instance.get_absolute_url(), 'post_id': instance.id})
+#
+#         post_type = 'news' if instance.post_type == 'news' else 'article'
+#         subscribers = Subscription.objects.filter(
+#             news_subscription=True) if post_type == 'news' else Subscription.objects.filter(articles_subscription=True)
+#
+#         user = instance.author.user
+#         today = timezone.now()
+#         start_of_day = today.replace(hour=0, minute=0, second=0, microsecond=0)
+#         end_of_day = today.replace(hour=23, minute=59, second=59, microsecond=999999)
+#         news_count = Post.objects.filter(author__user=user, post_type='news',
+#                                          created_at__range=(start_of_day, end_of_day)).count()
+#         if subscribers.exists():
+#             for subscriber in subscribers:
+#                 try:
+#                     if news_count <= 3:
+#                         user_email = subscriber.user.email
+#                         send_mail(subject, message, 'gefest-173@yandex.ru', [user_email], html_message=html_message)
+#                     else:
+#                         print('limit 3 posts')
+#                 except ObjectDoesNotExist:
+#                     print(f'User does not exist for subscriber: {subscriber.id}')
+#         else:
+#             print('No subscribers found')
+
+#addpost = Signal()
 class PostCreate(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
     template_name = 'create.html'
+
+    # def form_valid(self, form):
+    #     post = form.save(commit=False)
+    #     author, created = Author.objects.get_or_create(user=self.request.user)
+    #     post.author = author
+    #     post_type = 'news' if self.request.path == '/news/create/' else 'article'
+    #     form.instance.post_type = post_type
+    #     post.save()
+    #
+    #     if created:
+    #         send_email_on_new_post(Post, post, created)
+    #
+    #     return super(PostCreate, self).form_valid(form)
 
     def form_valid(self, form):
         post = form.save(commit=False)
@@ -147,11 +197,14 @@ class PostCreate(LoginRequiredMixin, CreateView):
             post.save()
 
             if created:
-                addpost.send(sender=Post, instance=post, created=created)
+                send_email_on_new_post(Post, post, created)
 
-            return super().form_valid(form)
+            return super(PostCreate, self).form_valid(form)
         else:
-            return HttpResponse("User is not authenticated")
+            return HttpResponse("User is not authenticated. Please log in.")
+
+
+
 
 class PostUpdate(LoginRequiredMixin, UpdateView):
     model = Post
@@ -191,6 +244,7 @@ class PostDelete(LoginRequiredMixin, DeleteView):
 #             return redirect('news_list')
 
 
+
 def subscribe_articles(request):
     if request.method == 'POST':
         Subscription.objects.create(user=request.user, articles_subscription=True)
@@ -202,10 +256,11 @@ def subscribe_news(request):
         return redirect('news_list')
 
 
-def protect_articles(request, id):
-    return HttpResponse("This is the protected articles page.")
 
-def protect_news(request, id):
-    return HttpResponse("This is the protected articles page.")
+# def protect_articles(request, id):
+#     return HttpResponse("This is the protected articles page.")
+#
+# def protect_news(request, id):
+#     return HttpResponse("This is the protected articles page.")
 
 

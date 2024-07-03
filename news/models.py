@@ -38,7 +38,7 @@ class Category(models.Model):
 
 
 class Post(models.Model):
-    author = models.ForeignKey('Author', on_delete=models.CASCADE, blank=True)
+    author = models.ForeignKey('Author', on_delete=models.CASCADE)
     POST_TYPES = (
         ('article', 'Article'),
         ('news', 'News'),    )
@@ -115,3 +115,5 @@ class Subscription(models.Model):
     news_subscription = models.BooleanField(default=False)
     articles_subscription = models.BooleanField(default=False)
 
+    class Meta:
+        db_table = 'subscription'
