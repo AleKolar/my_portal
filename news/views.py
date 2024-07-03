@@ -18,6 +18,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 
+from .signals import send_email_on_new_post
+
 
 def index(request):
     return render(request, 'index.html')
