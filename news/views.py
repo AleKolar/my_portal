@@ -1,30 +1,24 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
-from django.db import IntegrityError
 from django.db.models.signals import post_save
 from django.dispatch import Signal, receiver
-from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from .filters import PostFilter
 from .forms import PostForm
-from .models import Post, Category, Author, Subscription
+from .models import Post, Author
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from news.models import Subscription
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -198,11 +192,20 @@ def send_email_on_new_post(sender, instance, created, **kwargs):
 
 
 class PostCreate(LoginRequiredMixin, CreateView):
-    model = Post
-    form_class = PostForm
-    template_name = 'create.html'
+    class PostCreate(LoginRequiredMixin, CreateView):
+        model = Post
+        form_class = PostForm
+        template_name = 'create.html'
+
+        def dispatch(self, request, *args, **kwargs):
+            if not request.user.groups.filter(name='authors').exists():
+                messages.error(request, 'You need to be an author to create news and articles.')
+                return redirect('your_redirect_url_here')  # Specify the URL to redirect if not an author
+            return super().dispatch(request, *args, **kwargs)
+
 
     def form_valid(self, form):
+
         post = form.save(commit=False)
         author, created = Author.objects.get_or_create(user=self.request.user)
         post.author = author
@@ -268,7 +271,8 @@ def subscribe_articles(request):
         for post in posts:
             post.subscribers.add(user)
         return redirect('articles_list')
-
+    else:
+        return HttpResponse("Method not allowed", status=405)
 
 def subscribe_news(request):
     if request.method == 'POST':
@@ -277,3 +281,7 @@ def subscribe_news(request):
         for post in posts:
             post.subscribers.add(user)
         return redirect('news_list')
+    else:
+        #return HttpResponse("Method not allowed", status=405)
+        return redirect('news_list')
+
