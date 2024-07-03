@@ -21,6 +21,9 @@ from django.http import HttpResponse
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from news.models import Subscription
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 def index(request):
@@ -172,29 +175,6 @@ class PostsListView(LoginRequiredMixin, ListView):
 
 # addpost = Signal()
 
-@receiver(post_save, sender=Post)
-def send_email_on_new_post(sender, instance, created, **kwargs):
-    if created:
-        subject = instance.title
-        message = instance.content[:50]
-        html_message = render_to_string('email_template.html',
-                                        {'title': instance.title, 'content': instance.content[:50],
-                                         'post_url': instance.get_absolute_url(), 'post_id': instance.id})
-
-        post_type = 'news' if instance.post_type == 'news' else 'article'
-        subscribers = Subscription.objects.filter(
-            news_subscription=True) if post_type == 'news' else Subscription.objects.filter(articles_subscription=True)
-
-        if subscribers.exists():
-            for subscriber in subscribers:
-                try:
-                    user_email = subscriber.user.email
-                    send_mail(subject, message, 'gefest-173@yandex.ru', [user_email], html_message=html_message)
-                except ObjectDoesNotExist:
-                    print(f'User does not exist for subscriber: {subscriber.id}')
-        else:
-            print('No subscribers found')
-
 
 class PostCreate(LoginRequiredMixin, CreateView):
     model = Post
@@ -208,24 +188,33 @@ class PostCreate(LoginRequiredMixin, CreateView):
             author, created = Author.objects.get_or_create(user=self.request.user)
             post.author = author
             post_type = 'news' if self.request.path == '/news/create/' else 'article'
+
+            # Limit user to three news items per day
+            if post_type == 'news':
+                today = timezone.now().date()
+                user_news_count = Post.objects.filter(author=author, post_type='news', created_at__date=today).count()
+                if user_news_count >= 3:
+                    return HttpResponse("You have reached the limit of news posts for today.")
+
             form.instance.post_type = post_type
             post.save()
 
-            # Create subscription objects for users who have subscriptions to news or articles
-            subscribers = User.objects.filter(subscribed_categories__title=post_type)
+            # Send message to subscribers
+            self.send_message_to_subscribers(post)
 
-            for subscriber in subscribers:
-                news_subscription = True if post_type == 'news' else False
-                articles_subscription = True if post_type == 'article' else False
-                Subscription.objects.get_or_create(user=subscriber, news_subscription=news_subscription,
-                                                   articles_subscription=articles_subscription)
+        return super().form_valid(form)
 
-            if created:
-                send_email_on_new_post(Post, post, created)
+    def send_message_to_subscribers(self, post):
+        subscribers = post.subscribers.all()
 
-            return super(PostCreate, self).form_valid(form)
-        else:
-            return HttpResponse("User is not authenticated. Please log in.")
+        for subscriber in subscribers:
+            send_mail(
+                f"New {post.post_type.capitalize()} Published: {post.title}",
+                f"{post.content[:50]}\n\nRead more: {post.post_type}/{post.id}/",
+                'gefest-173@yandex.ru',
+                [subscriber.email],
+                fail_silently=False,
+            )
 
 
 class PostUpdate(LoginRequiredMixin, UpdateView):
