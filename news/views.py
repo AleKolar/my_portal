@@ -184,25 +184,25 @@ def send_email_on_new_post(sender, instance, created, **kwargs):
 
         post_type = 'news' if instance.post_type == 'news' else 'article'
 
-        subscribers = instance.subscribers.all()
+        post_id = instance.id
 
-        if subscribers.exists():  # Check if there are subscribers
-            for subscriber in subscribers:
-                send_mail(subject, message, 'gefest-173@yandex.ru', [subscriber.email], html_message=html_message)
+        subscribers = User.objects.filter(subscribed_categories=post_id).values_list('email', flat=True)
+
+        if subscribers.exists():
+            for subscriber_email in subscribers:
+                send_mail(subject, message, 'gefest-173@yandex.ru', [subscriber_email], html_message=html_message)
 
 
 class PostCreate(LoginRequiredMixin, CreateView):
-    class PostCreate(LoginRequiredMixin, CreateView):
-        model = Post
-        form_class = PostForm
-        template_name = 'create.html'
+    model = Post  # Define the model attribute to specify the model
+    form_class = PostForm
+    template_name = 'create.html'
 
-        def dispatch(self, request, *args, **kwargs):
-            if not request.user.groups.filter(name='authors').exists():
-                messages.error(request, 'You need to be an author to create news and articles.')
-                return redirect('your_redirect_url_here')  # Specify the URL to redirect if not an author
-            return super().dispatch(request, *args, **kwargs)
-
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.groups.filter(name='authors').exists():
+            messages.error(request, 'You need to be an author to create news and articles.')
+            return redirect('/')
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
 
@@ -274,6 +274,7 @@ def subscribe_articles(request):
     else:
         return HttpResponse("Method not allowed", status=405)
 
+
 def subscribe_news(request):
     if request.method == 'POST':
         user = request.user
@@ -282,6 +283,4 @@ def subscribe_news(request):
             post.subscribers.add(user)
         return redirect('news_list')
     else:
-        #return HttpResponse("Method not allowed", status=405)
-        return redirect('news_list')
-
+        return HttpResponse("Method not allowed", status=405)
