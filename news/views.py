@@ -12,7 +12,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from .filters import PostFilter
 from .forms import PostForm
-from .models import Post, Author
+from .models import Post, Author, Category, PostCategory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -174,47 +174,13 @@ class PostsListView(LoginRequiredMixin, ListView):
 # addpost = Signal()
 
 
-published_posts_today = {}
-
-@receiver(post_save, sender=Post)
-def send_email_on_new_post(sender, instance, created, **kwargs):
-    if created:
-        today = timezone.now().date()
-        if today in published_posts_today:
-            if published_posts_today[today] >= 3:
-                return
-
-        subject = instance.title
-        message = instance.content[:50]
-        html_message = render_to_string('email_template.html',
-                                        {'title': instance.title, 'content': instance.content[:50]})
-
-        post_type = 'news' if instance.post_type == 'news' else 'article'
-
-        post_id = instance.id
-
-        subscribers = User.objects.filter(subscribed_categories=post_id).values_list('email', flat=True)
-
-        if subscribers.exists():
-            for subscriber_email in subscribers:
-                send_mail(subject, message, 'gefest-173@yandex.ru', [subscriber_email], html_message=html_message)
-
-        published_posts_today[today] = published_posts_today.get(today, 0) + 1
-
 
 class PostCreate(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
     template_name = 'create.html'
 
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.groups.filter(name='authors').exists():
-            messages.error(request, 'You need to be an author to create news and articles.')
-            return redirect('/')
-        return super().dispatch(request, *args, **kwargs)
-
     def form_valid(self, form):
-
         post = form.save(commit=False)
         author, created = Author.objects.get_or_create(user=self.request.user)
         post.author = author
@@ -222,8 +188,11 @@ class PostCreate(LoginRequiredMixin, CreateView):
         form.instance.post_type = post_type
         post.save()
 
-        if created:
-            send_email_on_new_post(Post, post, created)
+
+        # Create a PostCategory object based on the post_type
+        category_name = 'Category 1' if post_type == 'news' else 'Category 2'
+        category, _ = Category.objects.get_or_create(name=category_name)
+        PostCategory.objects.create(post=post, category=category)
 
         return super(PostCreate, self).form_valid(form)
 
@@ -273,12 +242,35 @@ class PostDelete(LoginRequiredMixin, DeleteView):
 #     return HttpResponse("This is the protected articles page.")
 
 
+# def subscribe_articles(request):
+#     if request.method == 'POST':
+#         user = request.user
+#         posts = Post.objects.filter(post_type='article')
+#         for post in posts:
+#             post.subscribers.add(user)
+#         return redirect('articles_list')
+#     else:
+#         return HttpResponse("Method not allowed", status=405)
+#
+# def subscribe_news(request):
+#     if request.method == 'POST':
+#         user = request.user
+#         posts = Post.objects.filter(post_type='news')
+#         for post in posts:
+#             post.subscribers.add(user)
+#         return redirect('news_list')
+#     else:
+#         #return HttpResponse("Method not allowed", status=405)
+#         return redirect('news_list')
+
+
+
 def subscribe_articles(request):
     if request.method == 'POST':
         user = request.user
-        posts = Post.objects.filter(post_type='article')
-        for post in posts:
-            post.subscribers.add(user)
+        articles = Post.objects.filter(post_type='article')
+        for article in articles:
+            article.subscribers.add(user)
         return redirect('articles_list')
     else:
         return HttpResponse("Method not allowed", status=405)
@@ -287,9 +279,9 @@ def subscribe_articles(request):
 def subscribe_news(request):
     if request.method == 'POST':
         user = request.user
-        posts = Post.objects.filter(post_type='news')
-        for post in posts:
-            post.subscribers.add(user)
+        news_posts = Post.objects.filter(post_type='news')
+        for news_post in news_posts:
+            news_post.subscribers.add(user)
         return redirect('news_list')
     else:
         return HttpResponse("Method not allowed", status=405)
