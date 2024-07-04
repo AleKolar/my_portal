@@ -24,8 +24,10 @@ urlpatterns = [
 
     path('articles/<int:pk>/delete/', views.PostDelete.as_view(), name='delete'),
 
-    path('subscribe/news/', subscribe_news, name='subscribe_news'),
-    path('subscribe/articles/', subscribe_articles, name='subscribe_articles'),
+    # path('news_list/', subscribe_news, name='subscribe_news'),
+    # path('articles_list/', subscribe_articles, name='subscribe_articles'),
+
+
 
 
     ]

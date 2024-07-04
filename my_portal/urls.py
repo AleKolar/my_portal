@@ -131,17 +131,23 @@ urlpatterns = [
 
     path('profile/', update_profile, name='profile.html'),
 
-    path('news/', subscribe_news, name='subscribe_news'),
-    path('articles/', subscribe_articles, name='subscribe_articles'),
-
     path('confirm_email/', upgrade_me, name='protect'),
     path('confirm_email/sign/login/', include('protect.urls')),
 
+    # path('news_list/', subscribe_news, name='subscribe_news'),
+    # path('articles_list/', subscribe_articles, name='articles_list'),
 
+    path('articles_list/', subscribe_articles, name='articles_list'),
+    path('news_list/', subscribe_articles, name='news_list'),
+
+
+    # path('subscribe/news/', subscribe_news, name='subscribe_news'),
+    # path('subscribe/articles/', subscribe_articles, name='subscribe_articles'),
 
 
     # path('login/protect/news/<int:id>/', views.protect_news, name='protect_news'),
     # path('login/protect/articles/<int:id>/', views.protect_articles, name='protect_articles'),
+
 
 
 

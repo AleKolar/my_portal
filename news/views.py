@@ -3,6 +3,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.db.models.signals import post_save
 from django.dispatch import Signal, receiver
@@ -20,6 +21,7 @@ from django.http import HttpResponse, Http404
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
+from django.views.generic import View
 
 User = get_user_model()
 
@@ -67,11 +69,11 @@ class NewsListView(ListView):
         context['filter'] = PostFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
+class SubscribeToNewsView(View):
     @method_decorator(csrf_exempt)
     def post(self, request, *args, **kwargs):
-        articles_posts = Post.objects.filter(post_type='news')
-        for post in articles_posts:
-            post.subscribers.add(request.user)
+        news_category, _ = Category.objects.get_or_create(name='Category 1', post_type='news')
+        news_category.subscribers.add(request.user)
         return redirect('news_list')
 
 
@@ -87,11 +89,11 @@ class ArticlesListView(LoginRequiredMixin, ListView):
         context['filter'] = PostFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
+class SubscribeToArticlesView(View):
     @method_decorator(csrf_exempt)
     def post(self, request, *args, **kwargs):
-        articles_posts = Post.objects.filter(post_type='article')
-        for post in articles_posts:
-            post.subscribers.add(request.user)
+        articles_category, _ = Category.objects.get_or_create(name='Category 2', post_type='article')
+        articles_category.subscribers.add(request.user)
         return redirect('articles_list')
 
 
@@ -195,6 +197,7 @@ class PostCreate(LoginRequiredMixin, CreateView):
         category, _ = Category.objects.get_or_create(name=category_name)
         PostCategory.objects.create(post=post, category=category)
 
+        # Check if 'subscribe_user' method is available in the 'Category' model
         category.subscribe_user(self.request.user)
 
         return super(PostCreate, self).form_valid(form)
@@ -267,50 +270,74 @@ class PostDelete(LoginRequiredMixin, DeleteView):
 #         return redirect('news_list')
 
 
-import logging
+# import logging
+#
+# logger = logging.getLogger(__name__)
+#
+# class CustomCategoryError(Exception):
+#     pass
+#
+#
+# def your_view_method(get_instance_somehow):
+#     instance = get_instance_somehow()
+#
+#     subscribed_users = []  # Initialize subscribed_users as empty list
+#
+#     first_category = instance.categories.first()
+#     if first_category is not None:
+#         subscribed_users = first_category.subscribers.all()
+#     else:
+#         pass
+#
+# @login_required
+# def subscribe_news(request):
+#     if request.method == 'GET':
+#         return HttpResponse("Subscribe to news page")
+#
+#     if request.method == 'POST':
+#         try:
+#             news_category, created = Category.objects.get_or_create(name='Category 1', post_type='news')
+#             if news_category:
+#                 news_category.subscribe_user(request.user)
+#                 logger.info(f"User {request.user} subscribed to news category.")
+#             else:
+#                 raise CustomCategoryError("Category 'Category 1' does not exist and cannot be created.")
+#         except Category.DoesNotExist:
+#             raise CustomCategoryError("Category 'Category 1' does not exist and cannot be created.")
+#         return redirect('news_list')
+#
+#
+# @login_required
+# def subscribe_articles(request):
+#     if request.method == 'GET':
+#         return HttpResponse("Subscribe to articles page")
+#
+#     if request.method == 'POST':
+#         try:
+#             articles_category, created = Category.objects.get_or_create(name='Category 2', post_type='article')
+#             if articles_category:
+#                 articles_category.subscribe_user(request.user)
+#                 logger.info(f"User {request.user} subscribed to articles category.")
+#             else:
+#                 raise CustomCategoryError("Category 'Category 2' does not exist and cannot be created.")
+#         except Category.DoesNotExist:
+#             raise CustomCategoryError("Category 'Category 2' does not exist and cannot be created.")
+#         return redirect('articles_list')
 
-logger = logging.getLogger(__name__)
-
-class CustomCategoryError(Exception):
-    pass
-
-
-def your_view_method(get_instance_somehow):
-    instance = get_instance_somehow()  # Get your instance object
-
-    subscribed_users = []  # Initialize subscribed_users as empty list
-
-    first_category = instance.categories.first()
-    if first_category is not None:
-        subscribed_users = first_category.subscribers.all()
-        # Proceed with your logic using subscribed_users
-    else:
-        # Handle the case where no category is found
-        pass  # You can add specific handling here if needed
-
-
-@login_required
 def subscribe_news(request):
     try:
-        news_category, created = Category.objects.get_or_create(name='Category 1', post_type='news')
-        if news_category:
-            news_category.subscribe_user(request.user)
-            logger.info(f"User {request.user} subscribed to news category.")
-        else:
-            raise CustomCategoryError("Category 'Category 1' does not exist and cannot be created.")
-    except Category.DoesNotExist:
-        raise CustomCategoryError("Category 'Category 1' does not exist and cannot be created.")
-    return redirect('news_list')
+        news_category = Category.objects.get(name='News', post_type='news')
+    except ObjectDoesNotExist:
+        news_category = Category.objects.create(name='News', post_type='news')
 
-@login_required
+    news_category.subscribe_user(request.user)
+    return redirect('/news_list/')
+
 def subscribe_articles(request):
     try:
-        articles_category, created = Category.objects.get_or_create(name='Category 2', post_type='article')
-        if articles_category:
-            articles_category.subscribe_user(request.user)
-            logger.info(f"User {request.user} subscribed to articles category.")
-        else:
-            raise CustomCategoryError("Category 'Category 2' does not exist and cannot be created.")
-    except Category.DoesNotExist:
-        raise CustomCategoryError("Category 'Category 2' does not exist and cannot be created.")
-    return redirect('articles_list')
+        articles_category = Category.objects.get(name='Articles', post_type='article')
+    except ObjectDoesNotExist:
+        articles_category = Category.objects.create(name='Articles', post_type='article')
+
+    articles_category.subscribe_user(request.user)
+    return redirect('articles_list/')
