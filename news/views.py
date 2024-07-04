@@ -174,9 +174,16 @@ class PostsListView(LoginRequiredMixin, ListView):
 # addpost = Signal()
 
 
+published_posts_today = {}
+
 @receiver(post_save, sender=Post)
 def send_email_on_new_post(sender, instance, created, **kwargs):
     if created:
+        today = timezone.now().date()
+        if today in published_posts_today:
+            if published_posts_today[today] >= 3:
+                return
+
         subject = instance.title
         message = instance.content[:50]
         html_message = render_to_string('email_template.html',
@@ -192,9 +199,11 @@ def send_email_on_new_post(sender, instance, created, **kwargs):
             for subscriber_email in subscribers:
                 send_mail(subject, message, 'gefest-173@yandex.ru', [subscriber_email], html_message=html_message)
 
+        published_posts_today[today] = published_posts_today.get(today, 0) + 1
+
 
 class PostCreate(LoginRequiredMixin, CreateView):
-    model = Post  # Define the model attribute to specify the model
+    model = Post
     form_class = PostForm
     template_name = 'create.html'
 

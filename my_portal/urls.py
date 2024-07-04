@@ -136,7 +136,8 @@ urlpatterns = [
 
     path('confirm_email/', upgrade_me, name='protect'),
     path('confirm_email/sign/login/', include('protect.urls')),
-    path('confirm_email/sign/login/sign/login/', upgrade_me, name='protect'),
+
+
 
 
     # path('login/protect/news/<int:id>/', views.protect_news, name='protect_news'),
