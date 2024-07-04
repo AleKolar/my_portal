@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import subscribe_news, subscribe_articles
 
 # НАСТРОИЛ, ТАК ЧТОБ ПО СТРАНИЦАМ ПЕРЕМЕЩАТЬСЯ ПОСЛЕДОВАТЕЛЬНО, С РАСЧЕТОМ, ЧТО Я ПРАВИЛЬНО ПОНЯЛ ТЗ
 urlpatterns = [
@@ -23,9 +24,8 @@ urlpatterns = [
 
     path('articles/<int:pk>/delete/', views.PostDelete.as_view(), name='delete'),
 
-
-    path('subscribe_articles/', views.subscribe_articles, name='subscribe_articles'),
-    path('subscribe_news/', views.subscribe_news, name='subscribe_news'),
+    path('subscribe/news/', subscribe_news, name='subscribe_news'),
+    path('subscribe/articles/', subscribe_articles, name='subscribe_articles'),
 
 
     ]

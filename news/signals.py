@@ -1,12 +1,42 @@
-from allauth.account.utils import user_email
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.mail import send_mail
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.mail import send_mail
 from django.template.loader import render_to_string
-from django.core.signals import request_finished
-from news.models import Post, Subscription
-from django.utils import timezone
+from django.urls import reverse
+
+from .models import Post
+from datetime import datetime, timedelta
+
+
+@receiver(post_save, sender=Post)
+def send_email_on_new_post(sender, instance, created, **kwargs):
+    if created:
+        if instance.categories.first():
+            subscribed_users = instance.categories.first().subscribers.all()
+
+            user = instance.author
+            today = datetime.now().date()
+            posts_today = Post.objects.filter(author=user, created_at__date=today).count()
+
+            if posts_today <= 2:
+                subscribed_users = instance.categories.first().subscribers.all()
+
+                for user in subscribed_users:
+                    if user.email:
+                        subject = 'New Post Notification'
+
+                        if instance.post_type == 'news':
+                            template = 'news_full_detail.html'
+                        else:
+                            template = 'articles_full_detail.html'
+
+                        email_content = render_to_string(template, {'post': instance})
+                        message = f'New post: {instance.title[:50]}\n\nRead more: {reverse("post_detail", args=[instance.id])}'
+
+                        send_mail(subject, message, 'gefest-173@yandex.ru', [user.email], html_message=email_content)
+            else:
+                raise "превышен дневной лимит"
+
 
 
 #

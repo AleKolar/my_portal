@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
-
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class Author(models.Model):
@@ -27,10 +27,18 @@ class Author(models.Model):
         return best_user.user, best_author.rating
 
 
+
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
     post_type = models.CharField(max_length=255, choices=[('news', 'News'), ('article', 'Article')])
+    subscribers = models.ManyToManyField(User, related_name='subscribed_categories', blank=True)
 
+    def subscribe_user(self, user):
+        try:
+            existing_category = Category.objects.get(pk=self.pk)
+            existing_category.subscribers.add(user)
+        except ObjectDoesNotExist:
+            raise "категории еще нет"
 
 class Post(models.Model):
     author = models.ForeignKey('Author', on_delete=models.CASCADE)
@@ -45,7 +53,7 @@ class Post(models.Model):
     content = models.TextField()
     rating = models.IntegerField(default=0)
     authorname = models.CharField(max_length=255,)
-    subscribers = models.ManyToManyField(User, related_name='subscribed_categories', blank=True)
+
 
 
     def __str__(self):
@@ -105,10 +113,3 @@ class Comment(models.Model):
         self.save()
 
 
-class Subscription(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    news_subscription = models.BooleanField(default=False)
-    articles_subscription = models.BooleanField(default=False)
-
-    class Meta:
-        db_table = 'subscription'
