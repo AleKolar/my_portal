@@ -207,7 +207,6 @@ class PostCreate(LoginRequiredMixin, CreateView):
         category, _ = Category.objects.get_or_create(name=category_name)
         PostCategory.objects.create(post=post, category=category)
 
-        # Check if 'subscribe_user' method is available in the 'Category' model
         category.subscribe_user(self.request.user)
 
         return super(PostCreate, self).form_valid(form)

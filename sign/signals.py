@@ -23,7 +23,8 @@ def send_welcome_email(sender, **kwargs):
 
     subject = 'Welcome to my News Application!'
 
-    # Load your HTML email template
     html_message = render_to_string('custom_confirm_email.html', {'user': user})
 
-    send_mail(subject, None, 'gefest-173@yandex.ru', [email], html_message=html_message)
+    message = 'Welcome to our News Application!'
+
+    send_mail(subject, message, 'gefest-173@yandex.ru', [email], html_message=html_message)
