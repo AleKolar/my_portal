@@ -187,9 +187,9 @@ class PostCreate(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         post = form.save(commit=False)
-        #author, created = Author.objects.get_or_create(user=self.request.user)
-        #post.author = author
-        post.author = self.request.user.author
+        author, created = Author.objects.get_or_create(user=self.request.user)
+        post.author = author
+        #post.author = self.request.user.author
         post_type = 'news' if self.request.path == '/news/create/' else 'article'
         form.instance.post_type = post_type
 
