@@ -16,15 +16,17 @@ def save_author_profile(sender, instance, **kwargs):
     instance.profile.save()
 
 
-@receiver(user_signed_up)
 def send_welcome_email(sender, **kwargs):
     user = kwargs['user']
     email = user.email
+    username = user.username
 
     subject = 'Welcome to my News Application!'
 
-    html_message = render_to_string('custom_confirm_email.html', {'user': user})
+    activation_link = 'http://ALLOWED_HOSTS/activate?username=' + username
 
-    message = 'Welcome to our News Application!'
+    html_message = render_to_string('custom_confirm_email.html', {'user': user, 'activation_link': activation_link})
+
+    message = 'Welcome to our News Application! Please click the following link to activate your account: ' + activation_link
 
     send_mail(subject, message, 'gefest-173@yandex.ru', [email], html_message=html_message)
