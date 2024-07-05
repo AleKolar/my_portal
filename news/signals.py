@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -6,8 +7,8 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from .models import Post
 
-published_news_count = {}
 
+published_news_count = {}
 
 @receiver(post_save, sender=Post)
 def send_email_notification_to_subscribers(sender, instance, created, **kwargs):
@@ -28,13 +29,23 @@ def send_email_notification_to_subscribers(sender, instance, created, **kwargs):
         subscribers = instance.category.subscribers.all()
         post_url = f'http://ALLOWED_HOSTS/{instance.post_type}/{instance.id}'
 
+        print(f"Number of Subscribers: {subscribers.count()}")
+
+        # ТУТ ДОСТОВАПЛ ДАННЫЕ ИЗ table user
         for subscriber in subscribers:
-            user_email = subscriber.email
+            id = subscriber.id
+            user = User.objects.get(pk=id)
+            username = user.username
+            user_email = user.email
             post_title = instance.title
             post_content = instance.content
+            print(f'EMAIL: {user_email}')
+
 
             html_message = f"<h2>{post_title}</h2><p>{post_content[:50]}</p><a href='{post_url}'>Read more</a>"
             plain_message = f"Hello, {subscriber.username}. A new {instance.post_type} in your favorite section!\n\n{post_title}: {post_content[:50]}\nRead more at: {post_url}"
+
+            print(f"Sending email to: {user_email}, {subscriber.username}")  # Debug statement
 
             send_mail(
                 post_title,

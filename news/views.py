@@ -194,18 +194,19 @@ class PostCreate(LoginRequiredMixin, CreateView):
         form.instance.post_type = post_type
 
         if post_type == 'news':
-            category_name = ' News '
-            category, _ = Category.objects.get_or_create(name=category_name, post_type='news')
-            post.category = category
+            category_name = 'News'
+            post_category = 'Category 1'
+            post_type = 'news'
         else:
-            category_name = 'Article '
-            category, _ = Category.objects.get_or_create(name=category_name, post_type='article')
-            post.category = category
+            category_name = 'Article'
+            post_category = 'Category 2'
+            post_type = 'article'
 
+        category, _ = Category.objects.get_or_create(name=category_name, post_type=post_type)
+        post.category = category
         post.save()
 
-        category_name = 'Category 1' if post_type == 'news' else 'Category 2'
-        category, _ = Category.objects.get_or_create(name=category_name)
+        category, _ = Category.objects.get_or_create(name=post_category)
         PostCategory.objects.create(post=post, category=category)
 
         category.subscribe_user(self.request.user)
