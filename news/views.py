@@ -193,14 +193,15 @@ class PostCreate(LoginRequiredMixin, CreateView):
         post_type = 'news' if self.request.path == '/news/create/' else 'article'
         form.instance.post_type = post_type
 
+        post_type = 'news' if self.request.path == '/news/create/' else 'article'
+        form.instance.post_type = post_type
+
         if post_type == 'news':
             category_name = 'News'
             post_category = 'Category 1'
-            post_type = 'news'
         else:
             category_name = 'Article'
             post_category = 'Category 2'
-            post_type = 'article'
 
         category, _ = Category.objects.get_or_create(name=category_name, post_type=post_type)
         post.category = category
