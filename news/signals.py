@@ -11,8 +11,18 @@ from datetime import datetime, timedelta
 @receiver(post_save, sender=Post)
 def send_email_notification_to_subscribers(sender, instance, created, **kwargs):
     if created and instance.post_type in ['news', 'article']:
-        subscribers = instance.category.subscribers.all()
-        post_url = f'http://yourdomain.com/{instance.post_type}/{instance.id}'  # Update the URL
+        print(f"Sending email notification for new {instance.post_type}: {instance.title}")
+
+        category = instance.category
+        print(f"Category: {category.name}")
+
+        subscribers = category.subscribers.all()
+        print(f"Number of Subscribers for Category '{category.name}': {subscribers.count()}")
+
+        for subscriber in subscribers:
+            print(f"Subscriber: {subscriber.username}, Email: {subscriber.email}")
+
+        post_url = f'http://ALLOWED_HOSTS/{instance.post_type}/{instance.id}'
 
         for subscriber in subscribers:
             user_email = subscriber.email
