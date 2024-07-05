@@ -37,13 +37,8 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-
     def subscribe_user(self, user):
-        try:
-            existing_category = Category.objects.get(pk=self.pk)
-            existing_category.subscribers.add(user)
-        except ObjectDoesNotExist:
-            raise "категории еще нет"
+        self.subscribers.add(user)
 
 class Post(models.Model):
     author = models.ForeignKey('Author', on_delete=models.CASCADE)

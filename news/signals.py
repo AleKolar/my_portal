@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.mail import send_mail
@@ -16,29 +17,32 @@ def send_email_notification_to_subscribers(sender, instance, created, **kwargs):
         category = instance.category
         print(f"Category: {category.name}")
 
-        subscribers = category.subscribers.all()
-        print(f"Number of Subscribers for Category '{category.name}': {subscribers.count()}")
+        if category.post_type == 'news' or category.post_type == 'article':
+            try:
+                category.subscribe_user(instance.author.user)  # Subscribe the author of the post
+                subscribers = category.subscribers.all()
+                print(f"Number of Subscribers for Category '{category.name}': {subscribers.count()}")
 
-        for subscriber in subscribers:
-            print(f"Subscriber: {subscriber.username}, Email: {subscriber.email}")
+                post_url = f'http://ALLOWED_HOSTS/{instance.post_type}/{instance.id}'
 
-        post_url = f'http://ALLOWED_HOSTS/{instance.post_type}/{instance.id}'
+                for subscriber in subscribers:
+                    print(f"Subscriber: {subscriber.username}, Email: {subscriber.email}")
+                    user_email = subscriber.email
+                    post_title = instance.title
+                    post_content = instance.content
 
-        for subscriber in subscribers:
-            user_email = subscriber.email
-            post_title = instance.title
-            post_content = instance.content
+                    html_message = f"<h2>{post_title}</h2><p>{post_content[:50]}</p><a href='{post_url}'>Read more</a>"
+                    plain_message = f"Hello, {subscriber.username}. A new {instance.post_type} in your favorite section!\n\n{post_title}: {post_content[:50]}\nRead more at: {post_url}"
 
-            html_message = f"<h2>{post_title}</h2><p>{post_content[:50]}</p><a href='{post_url}'>Read more</a>"
-            plain_message = f"Hello, {subscriber.username}. A new {instance.post_type} in your favorite section!\n\n{post_title}: {post_content[:50]}\nRead more at: {post_url}"
-
-            send_mail(
-                post_title,
-                plain_message,
-                'gefest-173@yandex.ru',
-                [user_email],
-                html_message=html_message,
-            )
+                    send_mail(
+                        post_title,
+                        plain_message,
+                        'gefest-173@yandex.ru',
+                        [user_email],
+                        html_message=html_message,
+                    )
+            except ObjectDoesNotExist:
+                raise "Category does not exist"
 # @receiver(post_save, sender=Post)
 # def send_email_on_new_post(sender, instance, created, **kwargs):
 #     if created:

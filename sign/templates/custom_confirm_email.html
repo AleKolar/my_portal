@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <h2>Спасибо за регистрацию!</h2>
-    <title>Email Confirmation</title>
+    <meta charset="UTF-8">
+    <title>Спасибо за регистрацию!</title>
 </head>
 <body>
-    <h1>Email Confirmation</h1>
-    <p>Your email has been successfully confirmed. Thank you!</p>
-    <a href="{{ activation_link }}">Click here to activate your account</a>
+    <p>Hi {{ user.username }},</p>
+    <p>Welcome to our site! Please click the following link to activate your account:</p>
+    <a href="{{ activate_url }}">Activate Your Account</a>
 </body>
 </html>
+
