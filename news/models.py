@@ -29,9 +29,14 @@ class Author(models.Model):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=100)
     post_type = models.CharField(max_length=255, choices=[('news', 'News'), ('article', 'Article')])
     subscribers = models.ManyToManyField(User, related_name='subscribed_categories', blank=True)
+    posts = models.ManyToManyField('Post', related_name='post_categories')
+
+    def __str__(self):
+        return self.name
+
 
     def subscribe_user(self, user):
         try:
@@ -44,7 +49,8 @@ class Post(models.Model):
     author = models.ForeignKey('Author', on_delete=models.CASCADE)
     POST_TYPES = (
         ('article', 'Article'),
-        ('news', 'News'),    )
+        ('news', 'News'),
+    )
 
     post_type = models.CharField(max_length=10, choices=POST_TYPES)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -52,12 +58,15 @@ class Post(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
     rating = models.IntegerField(default=0)
-    authorname = models.CharField(max_length=255,)
+    authorname = models.CharField(max_length=255)
+    category = models.ForeignKey('Category', on_delete=models.CASCADE, related_name='post_related')
 
 
 
     def __str__(self):
-        return f'{self.authorname}: {self.content[:21]}'
+        return self.title
+
+
 
     def get_absolute_url(self):
         if self.post_type  == 'news':
