@@ -21,8 +21,10 @@ from allauth.account.utils import user_email, user_field
 
 @receiver(user_signed_up)
 def send_welcome_email(request, user, **kwargs):
-    activate_url = user_email(user)  # This gets the activation URL
+    activate_url = user_email(user)
     subject = 'Welcome'
+    template_path = 'custom_confirm_email.html'
+    print(f"Rendering template from path: {template_path}")
     message = render_to_string('custom_confirm_email.html', {
         'user': user,
         'activate_url': activate_url

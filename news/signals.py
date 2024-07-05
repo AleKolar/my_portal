@@ -2,17 +2,29 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from django.urls import reverse
-
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 from .models import Post
-from datetime import datetime, timedelta
 
+published_news_count = {}
 
 
 @receiver(post_save, sender=Post)
 def send_email_notification_to_subscribers(sender, instance, created, **kwargs):
     if created and instance.post_type in ['news', 'article']:
+        user = instance.author.user
+        current_date = timezone.now().date()
+
+        if user in published_news_count:
+            if published_news_count[user]['date'] == current_date and published_news_count[user]['count'] >= 3:
+                raise ValidationError("You have reached the daily limit for publishing news items.")
+            elif published_news_count[user]['date'] != current_date:
+                published_news_count[user] = {'date': current_date, 'count': 1}
+            else:
+                published_news_count[user]['count'] += 1
+        else:
+            published_news_count[user] = {'date': current_date, 'count': 1}
+
         subscribers = instance.category.subscribers.all()
         post_url = f'http://ALLOWED_HOSTS/{instance.post_type}/{instance.id}'
 
@@ -31,12 +43,8 @@ def send_email_notification_to_subscribers(sender, instance, created, **kwargs):
                 [user_email],
                 html_message=html_message,
             )
-# @receiver(post_save, sender=Post)
-# def send_email_on_new_post(sender, instance, created, **kwargs):
-#     if created:
-#         if instance.categories.first():
-#             subscribed_users = instance.categories.first().subscribers.all()
-#
+
+# НЕ ЗАБЫТЬ! НЕ БОЛЕЕ ТРЕХ В ДЕНЬ
 #             user = instance.author
 #             today = datetime.now().date()
 #             posts_today = Post.objects.filter(author=user, created_at__date=today).count()
@@ -45,61 +53,7 @@ def send_email_notification_to_subscribers(sender, instance, created, **kwargs):
 #                 subscribed_users = instance.categories.first().subscribers.all()
 #
 #                 for user in subscribed_users:
-#                     if user.email:
-#                         subject = 'New Post Notification'
 #
-#                         if instance.post_type == 'news':
-#                             template = 'news_full_detail.html'
-#                         else:
-#                             template = 'articles_full_detail.html'
-#
-#                         email_content = render_to_string(template, {'post': instance})
-#                         message = f'New post: {instance.title[:50]}\n\nRead more: {reverse("post_detail", args=[instance.id])}'
-#
-#                         send_mail(subject, message, 'gefest-173@yandex.ru', [user.email], html_message=email_content)
 #             else:
 #                 raise "превышен дневной лимит"
 
-
-
-#
-# @receiver(addpost)
-# def send_email_on_new_post(sender, instance, created, **kwargs):
-#     if created:
-#         subject = instance.title
-#         message = instance.content[:50]
-#         html_message = render_to_string('email_template.html',
-#                                         {'title': instance.title, 'content': instance.content[:50],
-#                                          'post_url': instance.get_absolute_url(), 'post_id': instance.id})
-#
-#         if instance.post_type == 'news':
-#             user = instance.author.user
-#             today = timezone.now()
-#             start_of_day = today.replace(hour=0, minute=0, second=0, microsecond=0)
-#             end_of_day = today.replace(hour=23, minute=59, second=59, microsecond=999999)
-#
-#             news_count = Post.objects.filter(author__user=user, post_type='news', created_at__range=(start_of_day, end_of_day)).count()
-#
-#             if news_count >= 3:
-#                 print('limit 3 posts')
-#                 return
-#
-#         subscribers = Subscription.objects.filter(news_subscription=True) if instance.post_type == 'news' else Subscription.objects.filter(articles_subscription=True)
-#
-#         if subscribers.exists():
-#             for subscriber in subscribers:
-#                 try:
-#                     user_email = subscriber.user.email
-#                     send_mail(subject, message, 'gefest-173@yandex.ru', [user_email], html_message=html_message)
-#                 except ObjectDoesNotExist:
-#                     print(f'User does not exist for subscriber: {subscriber.id}')
-#         else:
-#             print('No subscribers found')
-
-# @receiver(request_finished)
-# def send_email_on_request_finished(sender, **kwargs):
-#     subject = 'Request Processed Successfully'
-#     message = 'Thank you for REGISTRATION'
-#     recipient_email = [user_email]
-#
-#     send_mail(subject, message, 'gefest-173@yandex.ru', recipient_email)
