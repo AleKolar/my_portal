@@ -14,8 +14,10 @@
 {% endfor %}
 
 <form method="post" action="{% url 'subscribe_articles' %}">
+    <input type="hidden" name="subscription_type" value="articles">
+    <input type="hidden" name="next" value="{{ request.path }}">
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-    <button type="submit">Подписаться на Articles</button>
+    <button type="submit">Subscribe to Articles</button>
 </form>
 
 {# Добавляем пагинацию на страницу #}

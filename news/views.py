@@ -17,7 +17,7 @@ from .models import Post, Author, Category, PostCategory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, JsonResponse
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
@@ -331,7 +331,7 @@ def subscribe_news(request):
         news_category = Category.objects.create(name='News', post_type='news')
 
     news_category.subscribe_user(request.user)
-    return redirect('/news_list/')
+    return JsonResponse({'message': 'Subscribed to News successfully'}, status=200)
 
 def subscribe_articles(request):
     try:
@@ -340,4 +340,4 @@ def subscribe_articles(request):
         articles_category = Category.objects.create(name='Articles', post_type='article')
 
     articles_category.subscribe_user(request.user)
-    return redirect('articles_list/')
+    return JsonResponse({'message': 'Subscribed to Articles successfully'}, status=200)

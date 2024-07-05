@@ -9,33 +9,54 @@ from datetime import datetime, timedelta
 
 
 @receiver(post_save, sender=Post)
-def send_email_on_new_post(sender, instance, created, **kwargs):
-    if created:
-        if instance.categories.first():
-            subscribed_users = instance.categories.first().subscribers.all()
+def send_email_notification_to_subscribers(sender, instance, created, **kwargs):
+    if created and instance.post_type in ['news', 'article']:
+        subscribers = instance.category.subscribers.all()
+        post_url = f'http://yourdomain.com/{instance.post_type}/{instance.id}'  # Update the URL
 
-            user = instance.author
-            today = datetime.now().date()
-            posts_today = Post.objects.filter(author=user, created_at__date=today).count()
+        for subscriber in subscribers:
+            user_email = subscriber.email
+            post_title = instance.title
+            post_content = instance.content
 
-            if posts_today <= 2:
-                subscribed_users = instance.categories.first().subscribers.all()
+            html_message = f"<h2>{post_title}</h2><p>{post_content[:50]}</p><a href='{post_url}'>Read more</a>"
+            plain_message = f"Hello, {subscriber.username}. A new {instance.post_type} in your favorite section!\n\n{post_title}: {post_content[:50]}\nRead more at: {post_url}"
 
-                for user in subscribed_users:
-                    if user.email:
-                        subject = 'New Post Notification'
-
-                        if instance.post_type == 'news':
-                            template = 'news_full_detail.html'
-                        else:
-                            template = 'articles_full_detail.html'
-
-                        email_content = render_to_string(template, {'post': instance})
-                        message = f'New post: {instance.title[:50]}\n\nRead more: {reverse("post_detail", args=[instance.id])}'
-
-                        send_mail(subject, message, 'gefest-173@yandex.ru', [user.email], html_message=email_content)
-            else:
-                raise "превышен дневной лимит"
+            send_mail(
+                post_title,
+                plain_message,
+                'gefest-173@yandex.ru',
+                [user_email],
+                html_message=html_message,
+            )
+# @receiver(post_save, sender=Post)
+# def send_email_on_new_post(sender, instance, created, **kwargs):
+#     if created:
+#         if instance.categories.first():
+#             subscribed_users = instance.categories.first().subscribers.all()
+#
+#             user = instance.author
+#             today = datetime.now().date()
+#             posts_today = Post.objects.filter(author=user, created_at__date=today).count()
+#
+#             if posts_today <= 2:
+#                 subscribed_users = instance.categories.first().subscribers.all()
+#
+#                 for user in subscribed_users:
+#                     if user.email:
+#                         subject = 'New Post Notification'
+#
+#                         if instance.post_type == 'news':
+#                             template = 'news_full_detail.html'
+#                         else:
+#                             template = 'articles_full_detail.html'
+#
+#                         email_content = render_to_string(template, {'post': instance})
+#                         message = f'New post: {instance.title[:50]}\n\nRead more: {reverse("post_detail", args=[instance.id])}'
+#
+#                         send_mail(subject, message, 'gefest-173@yandex.ru', [user.email], html_message=email_content)
+#             else:
+#                 raise "превышен дневной лимит"
 
 
 

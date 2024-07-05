@@ -13,10 +13,11 @@
 <p><strong>Автор:</strong> {{ post.author }}</p>
 {% endfor %}
 
-<h1>Подписаться на News</h1>
 <form method="post" action="{% url 'subscribe_news' %}">
+    <input type="hidden" name="subscription_type" value="news">
+    <input type="hidden" name="next" value="{{ request.path }}">
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-    <button type="submit">Подписаться на News</button>
+    <button type="submit">Subscribe to News</button>
 </form>
 
 {# Добавляем пагинацию на страницу #}
