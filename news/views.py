@@ -200,7 +200,7 @@ class PostCreate(LoginRequiredMixin, CreateView):
             category_name = 'News'
             post_category = 'Category 1'
         else:
-            category_name = 'Article'
+            category_name = 'Articles'
             post_category = 'Category 2'
 
         category, _ = Category.objects.get_or_create(name=category_name, post_type=post_type)
