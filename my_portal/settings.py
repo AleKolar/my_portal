@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'django_apscheduler',
 
 ]
 
@@ -180,3 +181,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 DEFAULT_FROM_EMAIL = 'gefest-173@yandex.ru'
 
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 20
+
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+
+APSCHEDULER_RUN_NOW_TIMEOUT = 25

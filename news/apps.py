@@ -1,4 +1,10 @@
 from django.apps import AppConfig
+from django.core.mail import send_mail
+from django.contrib.sites.shortcuts import get_current_site
+from django.urls import reverse
+from datetime import timedelta
+from django.utils import timezone
+
 
 
 class NewsConfig(AppConfig):
@@ -7,4 +13,62 @@ class NewsConfig(AppConfig):
 
     def ready(self):
         import news.signals
+
+        from apscheduler.schedulers.background import BackgroundScheduler
+        import schedule
+        import time
+
+        from django.urls import reverse
+        from django.contrib.auth import get_user_model
+        from news.models import Post
+
+        User = get_user_model()
+
+
+        scheduler = BackgroundScheduler()
+
+        def send_weekly_article_list():
+            from news.models import Category
+            from django.utils.timezone import make_aware
+
+            end_date = timezone.now().date()
+            start_date = end_date - timedelta(days=7)
+
+            categories = Category.objects.filter(post_type__in=['article', 'news'])
+
+            subscribers = User.objects.filter(subscribed_categories__in=categories)
+
+            for subscriber in subscribers:
+                user_email = subscriber.email
+
+                new_posts = Post.objects.filter(created_at__range=[start_date, end_date],
+                                                post_categories__in=categories)
+
+                email_subject = "Weekly Article/News List"
+                email_body = "List of new articles/news published this week:\n"
+
+                for post in new_posts:
+                    post_type = 'articles' if post.post_type == 'article' else 'news'
+                    post_url = f'http://ALLOWED_HOSTS/{post_type}/{post.id}'
+                    email_body += f"{post.title}: {post.content[:50]} - {get_current_site(None)}{post_url}\n"
+                    print(f'AAAAAAAAAAAAA, {email_body}')
+                send_mail(
+                    email_subject,
+                    email_body,
+                    'gefest-173@yandex.ru',
+                    [user_email],
+                )
+
+                for post in new_posts:
+                    post.created_at = make_aware(post.created_at)
+
+        scheduler.add_job(send_weekly_article_list, 'cron', day_of_week='mon', hour=8)
+
+        scheduler.start()
+
+        # schedule.every(30).seconds.do(send_weekly_article_list)
+        #
+        # while True:
+        #     schedule.run_pending()
+        #     time.sleep(1)
 
