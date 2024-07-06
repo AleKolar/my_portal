@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weekly Article/News List</title>
+</head>
+<body>
+    <h1>Weekly Article/News List</h1>
+    <p>List of new articles/news published this week:</p>
+    <ul>
+        {% for post in new_posts %}
+            <li>
+                <a href="{{ post_url }}">{{ post.title }}</a>: {{ post.content|truncatechars:50 }}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

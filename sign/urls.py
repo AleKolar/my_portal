@@ -36,4 +36,5 @@ urlpatterns = [
 
     path('login/protect/profile/', update_profile, name='edit_profile'),
 
+
     ]
