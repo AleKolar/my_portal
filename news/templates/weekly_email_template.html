@@ -10,7 +10,7 @@
     <ul>
         {% for post in new_posts %}
             <li>
-                <a href="{{ post_url }}">{{ post.title }}</a>: {{ post.content|truncatechars:50 }}
+                <a href="{{ post.post_url }}">{{ post.title }}</a>: {{ post.content }}
             </li>
         {% endfor %}
     </ul>
