@@ -115,66 +115,6 @@ class PostsListView(LoginRequiredMixin, ListView):
         return context
 
 
-# @receiver(post_save, sender=Post)
-# def send_email_on_new_post(sender, instance, created, **kwargs):
-#     if created:
-#         subject = instance.title
-#         message = instance.content[:50]
-#         html_message = render_to_string('email_template.html',
-#                                         {'title': instance.title, 'content': instance.content[:50],
-#                                          'post_url': instance.get_absolute_url(), 'post_id': instance.id})
-#
-#         post_type = 'news' if instance.post_type == 'news' else 'article'
-#         subscribers = Subscription.objects.filter(
-#             news_subscription=True) if post_type == 'news' else Subscription.objects.filter(articles_subscription=True)
-#
-#         if subscribers.exists():
-#             for subscriber in subscribers:
-#                 try:
-#                     user_email = subscriber.user.email
-#                     send_mail(subject, message, 'gefest-173@yandex.ru', [user_email], html_message=html_message)
-#                 except ObjectDoesNotExist:
-#                     print(f'User does not exist for subscriber: {subscriber.id}')
-#         else:
-#             print('No subscribers found')
-
-
-
-### from last
-# @receiver(post_save, sender=Post)
-# def send_email_on_new_post(sender, instance, created, **kwargs):
-#     if created:
-#         subject = instance.title
-#         message = instance.content[:50]
-#         html_message = render_to_string('email_template.html',
-#                                         {'title': instance.title, 'content': instance.content[:50],
-#                                          'post_url': instance.get_absolute_url(), 'post_id': instance.id})
-#
-#         post_type = 'news' if instance.post_type == 'news' else 'article'
-#         subscribers = Subscription.objects.filter(
-#             news_subscription=True) if post_type == 'news' else Subscription.objects.filter(articles_subscription=True)
-#
-#         user = instance.author.user
-#         today = timezone.now()
-#         start_of_day = today.replace(hour=0, minute=0, second=0, microsecond=0)
-#         end_of_day = today.replace(hour=23, minute=59, second=59, microsecond=999999)
-#         news_count = Post.objects.filter(author__user=user, post_type='news',
-#                                          created_at__range=(start_of_day, end_of_day)).count()
-#         if subscribers.exists():
-#             for subscriber in subscribers:
-#                 try:
-#                     if news_count <= 3:
-#                         user_email = subscriber.user.email
-#                         send_mail(subject, message, 'gefest-173@yandex.ru', [user_email], html_message=html_message)
-#                     else:
-#                         print('limit 3 posts')
-#                 except ObjectDoesNotExist:
-#                     print(f'User does not exist for subscriber: {subscriber.id}')
-#         else:
-#             print('No subscribers found')
-
-
-
 class PostCreate(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
@@ -253,33 +193,7 @@ class PostDelete(LoginRequiredMixin, DeleteView):
 #             return redirect('news_list')
 
 
-# def protect_articles(request, id):
-#     return HttpResponse("This is the protected articles page.")
-#
-# def protect_news(request, id):
-#     return HttpResponse("This is the protected articles page.")
 
-
-# def subscribe_articles(request):
-#     if request.method == 'POST':
-#         user = request.user
-#         posts = Post.objects.filter(post_type='article')
-#         for post in posts:
-#             post.subscribers.add(user)
-#         return redirect('articles_list')
-#     else:
-#         return HttpResponse("Method not allowed", status=405)
-#
-# def subscribe_news(request):
-#     if request.method == 'POST':
-#         user = request.user
-#         posts = Post.objects.filter(post_type='news')
-#         for post in posts:
-#             post.subscribers.add(user)
-#         return redirect('news_list')
-#     else:
-#         #return HttpResponse("Method not allowed", status=405)
-#         return redirect('news_list')
 
 
 # import logging
@@ -300,41 +214,7 @@ class PostDelete(LoginRequiredMixin, DeleteView):
 #         subscribed_users = first_category.subscribers.all()
 #     else:
 #         pass
-#
-# @login_required
-# def subscribe_news(request):
-#     if request.method == 'GET':
-#         return HttpResponse("Subscribe to news page")
-#
-#     if request.method == 'POST':
-#         try:
-#             news_category, created = Category.objects.get_or_create(name='Category 1', post_type='news')
-#             if news_category:
-#                 news_category.subscribe_user(request.user)
-#                 logger.info(f"User {request.user} subscribed to news category.")
-#             else:
-#                 raise CustomCategoryError("Category 'Category 1' does not exist and cannot be created.")
-#         except Category.DoesNotExist:
-#             raise CustomCategoryError("Category 'Category 1' does not exist and cannot be created.")
-#         return redirect('news_list')
-#
-#
-# @login_required
-# def subscribe_articles(request):
-#     if request.method == 'GET':
-#         return HttpResponse("Subscribe to articles page")
-#
-#     if request.method == 'POST':
-#         try:
-#             articles_category, created = Category.objects.get_or_create(name='Category 2', post_type='article')
-#             if articles_category:
-#                 articles_category.subscribe_user(request.user)
-#                 logger.info(f"User {request.user} subscribed to articles category.")
-#             else:
-#                 raise CustomCategoryError("Category 'Category 2' does not exist and cannot be created.")
-#         except Category.DoesNotExist:
-#             raise CustomCategoryError("Category 'Category 2' does not exist and cannot be created.")
-#         return redirect('articles_list')
+
 
 def subscribe_news(request):
     try:
