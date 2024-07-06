@@ -31,7 +31,7 @@ def send_email_notification_to_subscribers(sender, instance, created, **kwargs):
 
         print(f"Number of Subscribers: {subscribers.count()}")
 
-        # ТУТ ДОСТОВАПЛ ДАННЫЕ ИЗ table user
+        # ТУТ ДОСТАЮ ДАННЫЕ ИЗ table user
         for subscriber in subscribers:
             id = subscriber.id
             user = User.objects.get(pk=id)
