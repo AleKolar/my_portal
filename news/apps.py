@@ -49,11 +49,17 @@ class NewsConfig(AppConfig):
                 email_subject = "Weekly Article/News List"
                 email_body = "List of new articles/news published this week:\n"
 
+                # for post in new_posts:
+                #     post_type = 'articles' if post.post_type == 'article' else 'news'
+                #     current_site = get_current_site(request)
+                #     post_url = f'http://{current_site}{reverse("post_detail", args=[post_type, post.id])}'
+                #     email_body += f"{post.title}: {post.content[:50]} - {get_current_site(None)}{post_url}\n"
+
                 for post in new_posts:
                     post_type = 'articles' if post.post_type == 'article' else 'news'
-                    current_site = get_current_site(request)
-                    post_url = f'http://{current_site}{reverse("post_detail", args=[post_type, post.id])}'
-                    email_body += f"{post.title}: {post.content[:50]} - {get_current_site(None)}{post_url}\n"
+                    #current_site = get_current_site(request)
+                    post_url = f'http://127.0.0.1:8000/login/protect/{post.id}'
+                    email_body += f"{post_type} {post.title}: {post.content[:50]} - {get_current_site(None)}{post_url}\n"
 
                     post.created_at = timezone.make_aware(post.created_at)
 
@@ -69,8 +75,8 @@ class NewsConfig(AppConfig):
         scheduler.add_job(send_weekly_article_list, 'cron', day_of_week='mon', hour=8)
         scheduler.start()
 
-        schedule.every(30).seconds.do(send_weekly_article_list)
-
-        while True:
-            schedule.run_pending()
-            time.sleep(1)
+        # schedule.every(30).seconds.do(send_weekly_article_list)
+        #
+        # while True:
+        #     schedule.run_pending()
+        #     time.sleep(1)

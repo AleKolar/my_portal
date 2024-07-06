@@ -41,7 +41,7 @@ def send_email_notification_to_subscribers(sender, instance, created, **kwargs):
             post_content = instance.content
             print(f'EMAIL: {user_email}, {instance.post_type}')
 
-
+            post_url = f'http://127.0.0.1:8000/login/protect/{instance.id}'
             html_message = f"<h2>Здравствуй,{subscriber.username} Новая статья {post_title} в твоём любимом разделе {instance.post_type}!</h2><p>{post_content[:50]}</p><a href='{post_url}'>Read more</a>"
             plain_message = f"Hello, {subscriber.username}. A new {instance.post_type} in your favorite section!\n\n{post_title}: {post_content[:50]}\nRead more at: {post_url}"
 
