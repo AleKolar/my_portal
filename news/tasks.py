@@ -53,7 +53,7 @@ def send_email_notification_to_subscribers(instance, created, **kwargs):
             )
 
 
-@app.task
+@shared_task
 def send_weekly_article_list():
     end_date = timezone.now().date()
     start_date = end_date - timedelta(days=7)

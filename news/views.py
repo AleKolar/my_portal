@@ -23,6 +23,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
 from django.views.generic import View
 
+
+from .tasks import send_email_notification_to_subscribers
+
 User = get_user_model()
 
 
@@ -151,6 +154,7 @@ class PostCreate(LoginRequiredMixin, CreateView):
         PostCategory.objects.create(post=post, category=category)
 
         category.subscribe_user(self.request.user)
+        send_email_notification_to_subscribers.delay(form.instance.id, created)
 
         return super(PostCreate, self).form_valid(form)
 
