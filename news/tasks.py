@@ -41,7 +41,7 @@ def send_email_notification_to_subscribers(post_obj, created, **kwargs):
             post_title = post.title
             post_content = post.content
 
-            post_url = f'http://127.0.0.1:8000/login/protect/{post.id}'
+            post_url = f'http://127.0.0.1:8000/login/protect/{post.post_type}/{post.id}'
             html_message = f"<h2>Здравствуй, {username} Новая статья {post_title} в твоём любимом разделе {post.post_type}!</h2><p>{post_content[:50]}</p><a href='{post_url}'>Read more</a>"
             plain_message = f"Hello, {username}. A new {post.post_type} in your favorite section!\n\n{post_title}: {post_content[:50]}\nRead more at: {post_url}"
 
