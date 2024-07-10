@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
+import json
 from django.db.models.signals import post_save
 from django.dispatch import Signal, receiver
 from django.template.loader import render_to_string
@@ -154,7 +155,15 @@ class PostCreate(LoginRequiredMixin, CreateView):
         PostCategory.objects.create(post=post, category=category)
 
         category.subscribe_user(self.request.user)
-        send_email_notification_to_subscribers.delay(form.instance.id, created)
+        post_obj = {
+            'post_id': post.id,
+            'title': post.title,
+            'content': post.content,
+        }
+
+
+        send_email_notification_to_subscribers.delay(post_obj, created)
+
 
         return super(PostCreate, self).form_valid(form)
 

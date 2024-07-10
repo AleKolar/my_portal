@@ -1,7 +1,7 @@
 from sched import scheduler
 from urllib import request
 from django.apps import AppConfig
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
@@ -9,7 +9,7 @@ from datetime import timedelta
 from django.utils import timezone
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from news.models import Post, Category
+#from news.models import Post, Category
 
 
 

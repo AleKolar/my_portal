@@ -59,7 +59,7 @@ class Post(models.Model):
 
 
     def __str__(self):
-        return self.title
+        return f"{{'title': '{self.title}', 'content': '{self.content}'}}"
 
 
 

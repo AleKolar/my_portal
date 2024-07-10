@@ -1,3 +1,4 @@
+import json
 from datetime import timedelta
 
 from celery import shared_task
@@ -7,19 +8,19 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-from my_portal.my_celery import app
 from news.models import Category, Post
 
 logger = get_task_logger(__name__)
 
+
 @shared_task
-def send_email_notification_to_subscribers(instance, created, **kwargs):
-    post = Post.objects.get(id=instance.id)
+def send_email_notification_to_subscribers(post_obj, created, **kwargs):
+    post = Post.objects.get(id=post_obj.id)
     published_news_count = {}
     current_date = timezone.now().date()
 
-    if created and instance.post_type in ['news', 'article']:
-        user = instance.author.user
+    if created and post.post_type in ['news', 'article']:
+        user = post.author.user
 
         if user in published_news_count:
             if published_news_count[user]['date'] == current_date and published_news_count[user]['count'] >= 3:
@@ -31,18 +32,18 @@ def send_email_notification_to_subscribers(instance, created, **kwargs):
         else:
             published_news_count[user] = {'date': current_date, 'count': 1}
 
-            subscribers = instance.category.subscribers.all()
+            subscribers = post.category.subscribers.all()
 
         for subscriber in subscribers:
             user = User.objects.get(pk=subscriber.id)
             username = user.username
             user_email = user.email
-            post_title = instance.title
-            post_content = instance.content
+            post_title = post.title
+            post_content = post.content
 
-            post_url = f'http://127.0.0.1:8000/login/protect/{instance.id}'
-            html_message = f"<h2>Здравствуй, {username} Новая статья {post_title} в твоём любимом разделе {instance.post_type}!</h2><p>{post_content[:50]}</p><a href='{post_url}'>Read more</a>"
-            plain_message = f"Hello, {username}. A new {instance.post_type} in your favorite section!\n\n{post_title}: {post_content[:50]}\nRead more at: {post_url}"
+            post_url = f'http://127.0.0.1:8000/login/protect/{post.id}'
+            html_message = f"<h2>Здравствуй, {username} Новая статья {post_title} в твоём любимом разделе {post.post_type}!</h2><p>{post_content[:50]}</p><a href='{post_url}'>Read more</a>"
+            plain_message = f"Hello, {username}. A new {post.post_type} in your favorite section!\n\n{post_title}: {post_content[:50]}\nRead more at: {post_url}"
 
             send_mail(
                 post_title,
@@ -51,7 +52,6 @@ def send_email_notification_to_subscribers(instance, created, **kwargs):
                 [user_email],
                 html_message=html_message,
             )
-
 
 @shared_task
 def send_weekly_article_list():
