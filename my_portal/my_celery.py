@@ -23,9 +23,8 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
-from news.tasks import send_email_notification_to_subscribers
 
-app.task(send_email_notification_to_subscribers)
+
 
 app.conf.update(
     worker_log_level='INFO'

@@ -25,7 +25,7 @@ from django.contrib.auth import get_user_model
 from django.views.generic import View
 
 
-from .tasks import send_email_notification_to_subscribers
+
 
 User = get_user_model()
 
@@ -154,15 +154,15 @@ class PostCreate(LoginRequiredMixin, CreateView):
         category, _ = Category.objects.get_or_create(name=post_category)
         PostCategory.objects.create(post=post, category=category)
 
-        category.subscribe_user(self.request.user)
-        post_obj = {
-            'post_id': post.id,
-            'title': post.title,
-            'content': post.content,
-        }
-
-
-        send_email_notification_to_subscribers.delay(post_obj, created)
+        # category.subscribe_user(self.request.user)
+        # post_obj = {
+        #     'post_id': post.id,
+        #     'title': post.title,
+        #     'content': post.content,
+        # }
+        #
+        #
+        # send_email_notification_to_subscribers.delay(post_obj, created)
 
 
         return super(PostCreate, self).form_valid(form)
