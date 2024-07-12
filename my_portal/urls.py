@@ -22,11 +22,13 @@ from django.template.defaulttags import url
 
 from django.urls import path, include
 
-
 from news import views
 from news.views import subscribe_news, subscribe_articles
 from protect.views import IndexView
 from sign.views import upgrade_me, BaseRegisterView, CustomLogoutView, update_profile
+
+from django.conf import settings
+from django.conf.urls.static import static
 
 app_name = 'sign'
 
@@ -145,7 +147,7 @@ urlpatterns = [
 
 
 
-
     ]
 
 
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

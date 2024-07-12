@@ -1,15 +1,6 @@
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.mail import send_mail
-import json
-from django.db.models.signals import post_save
-from django.dispatch import Signal, receiver
-from django.template.loader import render_to_string
-from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from .filters import PostFilter
@@ -23,7 +14,7 @@ from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
 from django.views.generic import View
-
+from .tasks import save_post_and_notify
 
 
 
@@ -132,7 +123,8 @@ class PostCreate(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         post = form.save(commit=False)
         author, created = Author.objects.get_or_create(user=self.request.user)
-        post.author = author
+        post.author_id = author.id###
+        ###post.author = author
         #post.author = self.request.user.author
         post_type = 'news' if self.request.path == '/news/create/' else 'article'
         form.instance.post_type = post_type
@@ -154,18 +146,11 @@ class PostCreate(LoginRequiredMixin, CreateView):
         category, _ = Category.objects.get_or_create(name=post_category)
         PostCategory.objects.create(post=post, category=category)
 
-        # category.subscribe_user(self.request.user)
-        # post_obj = {
-        #     'post_id': post.id,
-        #     'title': post.title,
-        #     'content': post.content,
-        # }
-        #
-        #
-        # send_email_notification_to_subscribers.delay(post_obj, created)
-
-
+        # 2, 3  form_valid , чтоб вызывала эту "сохранения поста и отправки уведомлений( save_post_and_notify )" задачу вместо сохранения поста напрямую
+        post_data = form.cleaned_data
+        save_post_and_notify.delay(post_data)
         return super(PostCreate, self).form_valid(form)
+
 
 
 class PostUpdate(LoginRequiredMixin, UpdateView):
