@@ -11,7 +11,7 @@ import logging
 
 
 
-logger = logging.getLogger('news')
+logger = logging.getLogger(__name__)
 
 
 @shared_task
@@ -21,7 +21,7 @@ def send_email_notification_to_subscribers(post_name, post_content, post_type, c
         content=post_content,
         post_type=post_type
     )
-    #post.save()
+    # post.save()
 
     published_news_count = {}
     current_date = timezone.now().date()
@@ -40,26 +40,39 @@ def send_email_notification_to_subscribers(post_name, post_content, post_type, c
             else:
                 published_news_count[user] = {'date': current_date, 'count': 1}
 
-    ###subscribers = post.category.subscribers.all()
-    subscribers = Category.objects.filter(post_type=post_type).values('subscribers')
+    ####subscribers = User.objects.filter(subscribed_categories__post_type=post_type)
+
+    categories = Category.objects.filter(post_type__in=['article', 'news'])
+
+    subscribers = User.objects.filter(subscribed_categories__in=categories)
+
 
     for subscriber in subscribers:
-        user = User.objects.get(pk=subscriber.user_id)
-        username = user.username
+        user = User.objects.get(username=subscriber.username)
         user_email = user.email
+        username = user.username
+        username = subscriber.username
         post_title = post.title
 
         post_url = f'http://127.0.0.1:8000/login/protect/{post.id}'
         html_message = f"<h2>Hello, {username}! New {post.post_type}: {post_title}</h2><p>{post_content[:50]}</p><a href='{post_url}'>Read more</a>"
         plain_message = f"Hello, {username}. A new {post.post_type} is available: {post_title}\n\n{post_content[:50]}\nRead more at: {post_url}"
 
-        send_mail(
-            post_title,
-            plain_message,
-            'gefest-173@yandex.ru',
-            [user_email],
-            html_message=html_message,
-        )
+        logger.debug("Starting email notification task...")
+
+        try:
+            send_mail(
+                post_title,
+                plain_message,
+                'gefest-173@yandex.ru',
+                [user_email],
+                html_message=html_message,
+            )
+            print(f"Email sent to {user_email}")
+            logger.info(f"Email sent to {user_email}")
+        except Exception as e:
+            print(f"Failed to send email to {user_email}: {str(e)}")
+            logger.error(f"Failed to send email to {user_email}: {str(e)}")
 
 @shared_task
 def send_weekly_article_list():
@@ -67,7 +80,9 @@ def send_weekly_article_list():
     start_date = end_date - timedelta(days=7)
 
     categories = Category.objects.filter(post_type__in=['article', 'news'])
+
     subscribers = User.objects.filter(subscribed_categories__in=categories)
+
 
     for subscriber in subscribers:
         user_email = subscriber.email
