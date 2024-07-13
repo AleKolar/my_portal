@@ -3,6 +3,9 @@ from celery import Celery
 from django.conf import settings
 import django
 
+
+
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "my_portal.settings")
 
 django.setup()

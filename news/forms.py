@@ -5,7 +5,7 @@ from news.models import Post, Author
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'authorname', 'content']
+        fields = ['title', 'authorname', 'content', 'id']
 
     def __init__(self, *args, **kwargs):
         # user = kwargs.pop('user', None)

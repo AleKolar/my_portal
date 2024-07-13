@@ -14,9 +14,7 @@ from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
 from django.views.generic import View
-from .tasks import save_post_and_notify
-
-
+from .tasks import send_email_notification_to_subscribers
 
 User = get_user_model()
 
@@ -121,16 +119,17 @@ class PostCreate(LoginRequiredMixin, CreateView):
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        post = form.save(commit=False)
+        if not self.request.user.groups.filter(name='authors').exists():
+            messages.error(self.request, 'You need to be an author to create news and articles.')
+            return redirect('/')
         author, created = Author.objects.get_or_create(user=self.request.user)
-        post.author_id = author.id###
-        ###post.author = author
-        #post.author = self.request.user.author
-        post_type = 'news' if self.request.path == '/news/create/' else 'article'
-        form.instance.post_type = post_type
+        ###post.author_id = author.id
+        post = form.save(commit=False)
+        post.author = author
 
         post_type = 'news' if self.request.path == '/news/create/' else 'article'
         form.instance.post_type = post_type
+
 
         if post_type == 'news':
             category_name = 'News'
@@ -148,8 +147,13 @@ class PostCreate(LoginRequiredMixin, CreateView):
 
         # 2, 3  form_valid , чтоб вызывала эту "сохранения поста и отправки уведомлений( save_post_and_notify )" задачу вместо сохранения поста напрямую
         post_data = form.cleaned_data
-        save_post_and_notify.delay(post_data)
-        return super(PostCreate, self).form_valid(form)
+        post_name = post_data.get('title')
+        post_content = post_data.get('content')[:50]
+        post_type = post_data.get('post_type')
+
+        created = True
+        send_email_notification_to_subscribers.delay(post_name, post_content, post_type, created)
+        return  super().form_valid(form)
 
 
 
@@ -171,47 +175,6 @@ class PostDelete(LoginRequiredMixin, DeleteView):
         elif post_type == 'article':
             return reverse_lazy('articles_list')
 
-
-# ПОКА НЕ НАДО , ПОПРОБУЕМ , НЕМНОГО ПО ДРУГОМУ
-# # SO add users for newsletters from me (while adding news)
-# class SubscribeToCategory(View):
-#     def post(self, request, *args, **kwargs):
-#         category_name = request.POST.get('post_type')
-#         user = request.user
-#
-#         if category_name == 'news':
-#             category = Category.objects.get(name='news')
-#             category.subscribers.add(user)
-#             return redirect('news_list')
-#         elif category_name == 'articles':
-#             category = Category.objects.get(name='articles')
-#             category.subscribers.add(user)
-#             return redirect('articles_list')
-#         else:
-#             return redirect('news_list')
-
-
-
-
-
-# import logging
-#
-# logger = logging.getLogger(__name__)
-#
-# class CustomCategoryError(Exception):
-#     pass
-#
-#
-# def your_view_method(get_instance_somehow):
-#     instance = get_instance_somehow()
-#
-#     subscribed_users = []  # Initialize subscribed_users as empty list
-#
-#     first_category = instance.categories.first()
-#     if first_category is not None:
-#         subscribed_users = first_category.subscribers.all()
-#     else:
-#         pass
 
 
 def subscribe_news(request):
