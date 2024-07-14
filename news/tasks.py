@@ -54,16 +54,6 @@ def send_email_notification_to_subscribers(post_name, post_content, created, pos
 
 
 
-
-
-
-
-
-
-
-
-
-
 @shared_task
 def send_weekly_article_list():
     end_date = timezone.now().date()
@@ -72,7 +62,6 @@ def send_weekly_article_list():
     categories = Category.objects.filter(post_type__in=['article', 'news'])
 
     subscribers = User.objects.filter(subscribed_categories__in=categories)
-
 
     for subscriber in subscribers:
         user_email = subscriber.email
