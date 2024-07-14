@@ -147,7 +147,7 @@ class PostCreate(LoginRequiredMixin, CreateView):
         category, _ = Category.objects.get_or_create(name=post_category)
         PostCategory.objects.create(post=post, category=category)
 
-        post_data = model_to_dict(post)  # Convert post object to dictionary
+        post_data = model_to_dict(post)
         post_name = post_data.get('title')
         post_content = post_data.get('content')[:50]
 
