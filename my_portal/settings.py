@@ -205,7 +205,7 @@ LOGGING = {
     'loggers': {
         '': {
             'handlers': ['console', 'file'],
-            'level': 'INFO',
+            'level': 'INFO', 'DEBAG': True,
             'propagate': True,
         },
     },

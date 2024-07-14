@@ -15,6 +15,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
 from django.views.generic import View
 from .tasks import send_email_notification_to_subscribers
+from django.forms.models import model_to_dict
+
 
 User = get_user_model()
 
@@ -112,6 +114,7 @@ class PostCreate(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
     template_name = 'create.html'
+
     def dispatch(self, request, *args, **kwargs):
         if not request.user.groups.filter(name='authors').exists():
             messages.error(request, 'You need to be an author to create news and articles.')
@@ -122,14 +125,13 @@ class PostCreate(LoginRequiredMixin, CreateView):
         if not self.request.user.groups.filter(name='authors').exists():
             messages.error(self.request, 'You need to be an author to create news and articles.')
             return redirect('/')
+
         author, created = Author.objects.get_or_create(user=self.request.user)
-        ###post.author_id = author.id
         post = form.save(commit=False)
         post.author = author
 
         post_type = 'news' if self.request.path == '/news/create/' else 'article'
         form.instance.post_type = post_type
-
 
         if post_type == 'news':
             category_name = 'News'
@@ -145,15 +147,13 @@ class PostCreate(LoginRequiredMixin, CreateView):
         category, _ = Category.objects.get_or_create(name=post_category)
         PostCategory.objects.create(post=post, category=category)
 
-        # 2, 3  form_valid , чтоб вызывала эту "сохранения поста и отправки уведомлений( save_post_and_notify )" задачу вместо сохранения поста напрямую
-        post_data = form.cleaned_data
+        post_data = model_to_dict(post)  # Convert post object to dictionary
         post_name = post_data.get('title')
         post_content = post_data.get('content')[:50]
-        post_type = post_data.get('post_type')
 
         created = True
-        send_email_notification_to_subscribers.delay(post_name, post_content, post_type, created)
-        return  super().form_valid(form)
+        send_email_notification_to_subscribers.delay(post_name, post_content, created, post.id)
+        return super().form_valid(form)
 
 
 
