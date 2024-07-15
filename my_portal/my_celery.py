@@ -33,9 +33,15 @@ app.conf.update(
     worker_log_level='INFO'
 )
 
+# app.conf.beat_schedule = {
+#     'send-weekly-article-list': {
+#         'task': 'path.to.send_weekly_article_list',
+#         'schedule': crontab(day_of_week='monday', hour=8, minute=0),
+#     },
+# }
 app.conf.beat_schedule = {
     'send-weekly-article-list': {
-        'task': 'path.to.send_weekly_article_list',
+        'task': 'news.tasks.send_email_notification_to_subscribers',
         'schedule': crontab(day_of_week='monday', hour=8, minute=0),
     },
 }
