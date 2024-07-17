@@ -16,6 +16,8 @@ from django.contrib.auth import get_user_model
 from django.views.generic import View
 from .tasks import send_email_notification_to_subscribers
 from django.forms.models import model_to_dict
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
 
 
 User = get_user_model()
@@ -24,7 +26,7 @@ User = get_user_model()
 def index(request):
     return render(request, 'index.html')
 
-
+cache_page(60*10)
 @login_required
 def news_full_detail(request, id):
     post = Post.objects.get(pk=id)
@@ -37,7 +39,7 @@ def news_full_detail(request, id):
     news_article = get_object_or_404(Post, id=id)
     return render(request, 'news_full_detail.html', {'post': news_article, 'id': id})
 
-
+cache_page(60*10)
 @login_required
 def articles_full_detail(request, id):
     post = Post.objects.get(pk=id)
@@ -59,7 +61,24 @@ class NewsListView(ListView):
     context_object_name = 'posts'
     paginate_by = 10
 
+    def get_cache_key(self):
+        return 'news_list_cache_v1'
+
+    def get_queryset(self):
+        cache_key = self.get_cache_key()
+        cached_data = cache.get(cache_key)
+        if cached_data is None:
+            queryset = super().get_queryset()
+            cache.set(cache_key, queryset, timeout=60 * 10)  # Cache for 10 minutes
+            return queryset
+        return cached_data
+
+    def invalidate_cache(self):
+        cache_key = self.get_cache_key()
+        cache.delete(cache_key)
+
     def get_context_data(self, **kwargs):
+        self.invalidate_cache()
         context = super().get_context_data(**kwargs)
         context['filter'] = PostFilter(self.request.GET, queryset=self.get_queryset())
         return context
@@ -79,7 +98,24 @@ class ArticlesListView(LoginRequiredMixin, ListView):
     context_object_name = 'posts'
     paginate_by = 10
 
+    def get_cache_key(self):
+        return 'articles_list_cache_v1'
+
+    def get_queryset(self):
+        cache_key = self.get_cache_key()
+        cached_data = cache.get(cache_key)
+        if cached_data is None:
+            queryset = super().get_queryset()
+            cache.set(cache_key, queryset, timeout=60 * 10)
+            return queryset
+        return cached_data
+
+    def invalidate_cache(self):
+        cache_key = self.get_cache_key()
+        cache.delete(cache_key)
+
     def get_context_data(self, **kwargs):
+        self.invalidate_cache()
         context = super().get_context_data(**kwargs)
         context['filter'] = PostFilter(self.request.GET, queryset=self.get_queryset())
         return context

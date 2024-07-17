@@ -2,7 +2,7 @@ import os
 from celery import Celery
 from django.conf import settings
 import django
-
+from celery.schedules import crontab
 
 
 
