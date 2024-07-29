@@ -1,4 +1,5 @@
-from datetime import timedelta
+
+from datetime import timedelta, datetime
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.contrib.auth.models import User
@@ -53,6 +54,9 @@ def send_email_notification_to_subscribers(post_name, post_content, created, pos
                 logger.error(f"Failed to send email to {user_email}: {str(e)}")
 
 
+
+start_date = datetime.now() - timedelta(days=7)
+end_date = datetime.now()
 
 @shared_task
 def send_weekly_article_list():
