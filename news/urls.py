@@ -1,14 +1,15 @@
-from django.urls import path
 from . import views
-from .views import subscribe_news, subscribe_articles
-from django.views.decorators.cache import cache_page
+### from django.views.decorators.cache import cache_page
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 # НАСТРОИЛ, ТАК ЧТОБ ПО СТРАНИЦАМ ПЕРЕМЕЩАТЬСЯ ПОСЛЕДОВАТЕЛЬНО, С РАСЧЕТОМ, ЧТО Я ПРАВИЛЬНО ПОНЯЛ ТЗ
 urlpatterns = [
     #####CASHES#### path('news/', cache_page(60)(views.NewsListView.as_view()), name='news_list'),
     path('news/', views.NewsListView.as_view(), name='news_list'),
-    #path('', views.index, name='index'),
+    # path('', views.index, name='index'),
     path('<int:pk>/delete', views.PostDelete.as_view(), name='delete'),
     path('news/<int:id>/', views.news_full_detail, name='news_full_detail'),
     path('<int:id>/', views.news_full_detail, name='news_full_detail'),
@@ -27,14 +28,7 @@ urlpatterns = [
 
     path('articles/<int:pk>/delete/', views.PostDelete.as_view(), name='delete'),
 
-    # path('news_list/', subscribe_news, name='subscribe_news'),
-    # path('articles_list/', subscribe_articles, name='subscribe_articles'),
+]
 
-
-
-
-    ]
-
-
-
-
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

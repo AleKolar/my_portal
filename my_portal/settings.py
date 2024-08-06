@@ -129,14 +129,18 @@ USE_I18N = True
 
 USE_TZ = False
 
-#STATICFILES_DIRS = [
-    #os.path.join(BASE_DIR, 'news/static'),
-#]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 
 
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+
 
 LOGIN_URL = 'sign/login/'
 

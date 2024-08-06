@@ -44,7 +44,7 @@ urlpatterns = [
 
     #path('news/articles/', views.ArticlesListView.as_view(), name='articles_list'),
 
-    path('articles/', views.ArticlesListView.as_view(), name='articles_list'),
+    ######path('articles/', views.ArticlesListView.as_view(), name='articles_list'),
 
     path('news/<int:id>/', views.news_full_detail, name='news_full_detail'),
 
@@ -149,5 +149,5 @@ urlpatterns = [
 
     ]
 
-
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
