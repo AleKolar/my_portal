@@ -42,10 +42,6 @@ urlpatterns = [
 
     path('confirm_email/', upgrade_me, name='protect'),
 
-    #path('news/articles/', views.ArticlesListView.as_view(), name='articles_list'),
-
-    ######path('articles/', views.ArticlesListView.as_view(), name='articles_list'),
-
     path('news/<int:id>/', views.news_full_detail, name='news_full_detail'),
 
     path('', include('sign.urls')),

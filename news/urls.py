@@ -5,7 +5,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 
-# НАСТРОИЛ, ТАК ЧТОБ ПО СТРАНИЦАМ ПЕРЕМЕЩАТЬСЯ ПОСЛЕДОВАТЕЛЬНО, С РАСЧЕТОМ, ЧТО Я ПРАВИЛЬНО ПОНЯЛ ТЗ
+
 urlpatterns = [
     #####CASHES#### path('news/', cache_page(60)(views.NewsListView.as_view()), name='news_list'),
     path('news/', views.NewsListView.as_view(), name='news_list'),
@@ -20,6 +20,7 @@ urlpatterns = [
 
     #####CASHES#### path('articles/', cache_page(60)(views.ArticlesListView.as_view()), name='articles_list'),
     path('articles/', views.ArticlesListView.as_view(), name='articles_list'),
+
     path('articles/create/', views.PostCreate.as_view(), name='create'),
 
     path('articles/<int:id>/', views.articles_full_detail, name='articles_full_detail'),  # all art

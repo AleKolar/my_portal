@@ -1,12 +1,12 @@
 {% extends 'flatpages/default.html' %}
 {% load censor %}
-{% load cache %}
+<!--{% load cache %}-->
 
 {% block content %}
 
 <h1><***News***></h1>
 
-{% cache 60 posts_cache_key %}
+<!-- {% cache 60 posts_cache_key %} -->
 {% for post in posts %}
 <a href="{% url 'news_full_detail' id=post.id %}" class="btn btn-warning">Подробнее
     <h2>{{ post.title|censor }}</h2>
@@ -15,7 +15,7 @@
 <p>{{ post.content|slice:":21"|censor }}</p>
 <p><strong>Автор:</strong> {{ post.author }}</p>
 {% endfor %}
-{% endcache %}
+<!-- {% endcache %} -->
 
 <form method="post" action="{% url 'subscribe_news' %}">
     <input type="hidden" name="subscription_type" value="news">
