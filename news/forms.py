@@ -1,5 +1,5 @@
 from django import forms
-from news.models import Post, Author
+from news.models import Post, Author, Comment
 
 
 class PostForm(forms.ModelForm):
@@ -14,19 +14,16 @@ class PostForm(forms.ModelForm):
         self.fields['content'].label = "Текст публикации:"
         self.fields['authorname'].label = "Автор"
 
-
-        # if user:
-        #     author_instance, created = Author.objects.get_or_create(user=user)
-        #     self.fields['author'].queryset = Author.objects.filter(user=user)
-        # else:
-        #     self.fields['author'].queryset = Author.objects.all()
-
-    # ЗАКОМИТЕЛ, ТАК КАК В ЗАДАНИИ АВТОВЫБОР POST_TYPE
-    #     self.post_type = Post.POST_TYPES
-    #
-    # def clean(self):
-    #     if self.post_type not in ['news', 'article']:
-    #         raise ValidationError("Invalid post_type value. It should be either 'news' or 'article'")
+class CommentForm(forms.ModelForm):
+    ### author = forms.CharField(max_length=100, label='Author')  # Add author field
+    text = forms.CharField(widget=forms.Textarea(attrs={'rows': 4, 'cols': 50}), label='Comment Text')  # Add text field
+    class Meta:
+        model = Comment
+        fields = ['author', 'text']
+        labels = {'text': 'Comment Text'}
+        widgets = {
+            'text': forms.Textarea(attrs={'rows': 4, 'cols': 50})  # Customize the size of the text area
+        }
 
 
 

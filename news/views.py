@@ -4,7 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from .filters import PostFilter
-from .forms import PostForm
+from .forms import PostForm, CommentForm
 from .models import Post, Author, Category, PostCategory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, UpdateView, DeleteView
@@ -39,18 +39,31 @@ def news_full_detail(request, id):
     news_article = get_object_or_404(Post, id=id)
     return render(request, 'news_full_detail.html', {'post': news_article, 'id': id})
 
-@cache_page(300)
+#@cache_page(300)
 @login_required
 def articles_full_detail(request, id):
-    post = Post.objects.get(pk=id)
+    post = get_object_or_404(Post, id=id)
     post_info = {
         'title': post.title,
         'content': post.content,
         'publish_date': post.created_at.strftime('%d.%m.%Y'),
         'author': post.authorname,
     }
-    news_article = get_object_or_404(Post, id=id)
-    return render(request, 'articles_full_detail.html', {'post': news_article, 'id': id})
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            new_comment = form.save(commit=False)
+            new_comment.post = post
+            new_comment.user = request.user
+            author_instance = Author.objects.get(user=request.user)
+            new_comment.author = author_instance
+            new_comment.save()
+            messages.success(request, "Comment added successfully!")
+    else:
+        form = CommentForm()
+
+    return render(request, 'articles_full_detail.html', {'post': post, 'id': id, 'comment_form': form}, )
 
 
 @method_decorator(login_required, name='dispatch')

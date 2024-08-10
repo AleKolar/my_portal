@@ -56,7 +56,9 @@ class Post(models.Model):
     authorname = models.CharField(max_length=255)
     category = models.ForeignKey('Category', on_delete=models.CASCADE, related_name='post_related')
 
-
+    def last_news(self):
+        last_news = Post.objects.filter(created_at__lt=self.created_at).order_by('-created_at').first()
+        return last_news
 
     def __str__(self):
         return f"{{'title': '{self.title}', 'content': '{self.content}'}}"
