@@ -8,12 +8,12 @@
 # from apscheduler.schedulers.background import BackgroundScheduler
 # from apscheduler.triggers.cron import CronTrigger
 # from django_apscheduler.jobstores import DjangoJobStore
-# import logging
+# import logs
 # from django.conf import settings
 #
 # ### ИСПОЛШЬЗУЕМ COMMAND
 #
-# logger = logging.getLogger(__name__)
+# logger = logs.getLogger(__name__)
 #
 #
 # class Command(BaseCommand):

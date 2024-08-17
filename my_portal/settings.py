@@ -189,34 +189,34 @@ CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 
 CELERY_RESULT_BACKEND = 'rpc://'
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-        },
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'C://Users//User//PycharmProjects/l',
-            'formatter': 'verbose',
-        },
-    },
-    'loggers': {
-        '': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO', 'DEBAG': True,
-            'propagate': True,
-        },
-    },
-    'formatters': {
-        'verbose': {
-            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
-        },
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logs.StreamHandler',
+#         },
+#         'file': {
+#             'level': 'DEBUG',
+#             'class': 'logs.FileHandler',
+#             'filename': 'C://Users//User//PycharmProjects/l',
+#             'formatter': 'verbose',
+#         },
+#     },
+#     'loggers': {
+#         '': {
+#             'handlers': ['console', 'file'],
+#             'level': 'INFO', 'DEBAG': True,
+#             'propagate': True,
+#         },
+#     },
+#     'formatters': {
+#         'verbose': {
+#             'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+#         },
+#     },
+# }
 
 CACHES = {
     'default': {
@@ -224,3 +224,146 @@ CACHES = {
         'LOCATION': os.path.join(BASE_DIR, 'cache_files'), # Указываем, куда будем сохранять кэшируемые файлы! Не забываем создать папку cache_files внутри папки с manage.py!
     }
 }
+
+# LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+#
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logs.StreamHandler',
+#             'filters': ['debug_true'],
+#         },
+#         'file_general': {
+#             'level': 'INFO',
+#             'class': 'logs.FileHandler',
+#             'filename': os.path.join(LOGS_DIR, 'general.log'),
+#             'formatter': 'general_format',
+#             'filters': ['debug_false'],
+#         },
+#         'file_errors': {
+#             'level': 'ERROR',
+#             'class': 'logs.FileHandler',
+#             'filename': os.path.join(LOGS_DIR, 'errors.log'),
+#             'formatter': 'errors_format',
+#             'filters': ['debug_false'],
+#         },
+#         'file_security': {
+#             'level': 'INFO',
+#             'class': 'logs.FileHandler',
+#             'filename': os.path.join(LOGS_DIR, 'security.log'),
+#             'formatter': 'security_format',
+#             'filters': ['debug_false'],
+#         },
+#         'email_admins': {
+#             'level': 'ERROR',
+#             'class': 'django.utils.log.AdminEmailHandler',
+#             'formatter': 'errors_format',
+#             'filters': ['debug_false'],
+#             'email_backend': 'django.core.mail.backends.smtp.EmailBackend',
+#             'email': 'gefest-173@yandex.ru',
+#             'include_html': True,
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console', 'file_general', 'file_errors', 'mail_admins'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#         'news': {
+#             'handlers': ['console'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#         'django.request': {
+#             'handlers': ['file_errors', 'mail_admins'],
+#             'level': 'ERROR',
+#             'propagate': False,
+#         },
+#         'django.server': {
+#             'handlers': ['file_errors', 'mail_admins'],
+#             'level': 'ERROR',
+#             'propagate': False,
+#         },
+#         'django.template': {
+#             'handlers': ['file_errors'],
+#             'level': 'ERROR',
+#             'propagate': False,
+#         },
+#         'django.db': {
+#             'handlers': ['file_errors'],
+#             'level': 'ERROR',
+#             'propagate': False,
+#         },
+#         'django.security': {
+#             'handlers': ['file_security'],
+#             'level': 'INFO',
+#             'propagate': False,
+#         },
+#     },
+#     'formatters': {
+#         'verbose': {
+#             'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
+#         },
+#         'general_format': {
+#             'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
+#         },
+#         'errors_format': {
+#             'format': '%(levelname)s %(asctime)s %(module)s %(message)s %(pathname)s'
+#         },
+#         'security_format': {
+#             'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
+#         },
+#     },
+#
+# }
+
+
+'''
+Я могу сделать logging требуемой конфигурации файла журнала, 
+только, в упрощенной конфигурацию ,без явной ссылки на 'my_portal'
+'''
+import logging
+
+LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+
+
+logging.basicConfig(level=logging.DEBUG)
+
+
+file_general_handler = logging.FileHandler(os.path.join(LOGS_DIR, 'general.log'))
+file_general_handler.setLevel(logging.INFO)
+file_general_format = logging.Formatter('%(levelname)s %(asctime)s %(module)s %(message)s')
+file_general_handler.setFormatter(file_general_format)
+
+
+file_errors_handler = logging.FileHandler(os.path.join(LOGS_DIR, 'errors.log'))
+file_errors_handler.setLevel(logging.ERROR)
+file_errors_format = logging.Formatter('%(levelname)s %(asctime)s %(module)s %(message)s %(pathname)s')
+file_errors_handler.setFormatter(file_errors_format)
+
+
+file_security_handler = logging.FileHandler(os.path.join(LOGS_DIR, 'security.log'))
+file_security_handler.setLevel(logging.INFO)
+file_security_format = logging.Formatter('%(levelname)s %(asctime)s %(module)s %(message)s')
+file_security_handler.setFormatter(file_security_format)
+
+
+email_admins_handler = logging.handlers.SMTPHandler(
+    mailhost='localhost',
+    fromaddr='news@example.com',
+    toaddrs=['gefest-173@yandex.ru'],
+    subject='Error in app'
+)
+email_admins_handler.setLevel(logging.ERROR)
+email_admins_handler.setFormatter(file_errors_format)
+
+
+root_logger = logging.getLogger('')
+root_logger.addHandler(file_general_handler)
+root_logger.addHandler(file_errors_handler)
+root_logger.addHandler(file_security_handler)
+root_logger.addHandler(email_admins_handler)
