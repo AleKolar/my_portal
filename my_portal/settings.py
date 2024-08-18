@@ -301,111 +301,111 @@ CACHES = {
 Я могу сделать logging требуемой конфигурации файла журнала, 
 только, в упрощенной конфигурацию ,без явной ссылки на 'my_portal'
 '''
-# import logging
-# LOGS_DIR = os.path.join(BASE_DIR, 'logs')
-#
-#
-# logging.basicConfig(level=logging.DEBUG)
-#
-#
-# file_general_handler = logging.FileHandler(os.path.join(LOGS_DIR, 'general.log'))
-# file_general_handler.setLevel(logging.INFO)
-# file_general_format = logging.Formatter('%(levelname)s %(asctime)s %(module)s %(message)s')
-# file_general_handler.setFormatter(file_general_format)
-#
-#
-# file_errors_handler = logging.FileHandler(os.path.join(LOGS_DIR, 'errors.log'))
-# file_errors_handler.setLevel(logging.ERROR)
-# file_errors_format = logging.Formatter('%(levelname)s %(asctime)s %(module)s %(message)s %(pathname)s')
-# file_errors_handler.setFormatter(file_errors_format)
-#
-#
-# file_security_handler = logging.FileHandler(os.path.join(LOGS_DIR, 'security.log'))
-# file_security_handler.setLevel(logging.INFO)
-# file_security_format = logging.Formatter('%(levelname)s %(asctime)s %(module)s %(message)s')
-# file_security_handler.setFormatter(file_security_format)
-#
-#
-# email_admins_handler = logging.handlers.SMTPHandler(
-#     mailhost='localhost',
-#     fromaddr='news@example.com',
-#     toaddrs=['gefest-173@yandex.ru'],
-#     subject='Error in app'
-# )
-# email_admins_handler.setLevel(logging.ERROR)
-# email_admins_handler.setFormatter(file_errors_format)
-#
-#
-# root_logger = logging.getLogger('')
-# root_logger.addHandler(file_general_handler)
-# root_logger.addHandler(file_errors_handler)
-# root_logger.addHandler(file_security_handler)
-# root_logger.addHandler(email_admins_handler)
-
-
-
+import logging
 LOGS_DIR = os.path.join(BASE_DIR, 'logs')
 
-# handlers
-handlers_config = {
-    'file_general': {
-        'class': 'logging.FileHandler',
-        'level': logging.INFO,
-        'formatter': 'general_format',
-        'filename': os.path.join(LOGS_DIR, 'general.log'),
-    },
-    'file_errors': {
-        'class': 'logging.FileHandler',
-        'level': logging.ERROR,
-        'formatter': 'errors_format',
-        'filename': os.path.join(LOGS_DIR, 'errors.log'),
-    },
-    'file_security': {
-        'class': 'logging.FileHandler',
-        'level': logging.INFO,
-        'formatter': 'security_format',
-        'filename': os.path.join(LOGS_DIR, 'security.log'),
-    },
-    'email_admins': {
-        'class': 'logging.handlers.SMTPHandler',
-        'level': logging.ERROR,
-        'formatter': 'errors_format',
-        'mailhost': 'localhost',
-        'fromaddr': 'gefest-173@yandex.ru',
-        'toaddrs': ['alek.kolark@gmail.com', 'alekolar17982@gmail.com'],
-        'subject': 'Error in app',
-    }
-}
 
-# formaters
-formatters_config = {
-    'general_format': {
-        'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
-    },
-    'errors_format': {
-        'format': '%(levelname)s %(asctime)s %(module)s %(message)s %(pathname)s'
-    },
-    'security_format': {
-        'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
-    },
-}
-
-# loggers
-loggers_config = {
-    '': {  # Root logger
-        'handlers': ['file_general', 'file_errors', 'file_security', 'email_admins'],
-        'level': logging.DEBUG,
-    }
-}
-
-#  settings
 logging.basicConfig(level=logging.DEBUG)
 
-# logging configuration
-logging.config.dictConfig({
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': handlers_config,
-    'formatters': formatters_config,
-    'loggers': loggers_config,
-})
+
+file_general_handler = logging.FileHandler(os.path.join(LOGS_DIR, 'general.log'))
+file_general_handler.setLevel(logging.INFO)
+file_general_format = logging.Formatter('%(levelname)s %(asctime)s %(module)s %(message)s')
+file_general_handler.setFormatter(file_general_format)
+
+
+file_errors_handler = logging.FileHandler(os.path.join(LOGS_DIR, 'errors.log'))
+file_errors_handler.setLevel(logging.ERROR)
+file_errors_format = logging.Formatter('%(levelname)s %(asctime)s %(module)s %(message)s %(pathname)s')
+file_errors_handler.setFormatter(file_errors_format)
+
+
+file_security_handler = logging.FileHandler(os.path.join(LOGS_DIR, 'security.log'))
+file_security_handler.setLevel(logging.INFO)
+file_security_format = logging.Formatter('%(levelname)s %(asctime)s %(module)s %(message)s')
+file_security_handler.setFormatter(file_security_format)
+
+
+email_admins_handler = logging.handlers.SMTPHandler(
+    mailhost='localhost',
+    fromaddr='news@example.com',
+    toaddrs=['gefest-173@yandex.ru'],
+    subject='Error in app'
+)
+email_admins_handler.setLevel(logging.ERROR)
+email_admins_handler.setFormatter(file_errors_format)
+
+
+root_logger = logging.getLogger('')
+root_logger.addHandler(file_general_handler)
+root_logger.addHandler(file_errors_handler)
+root_logger.addHandler(file_security_handler)
+root_logger.addHandler(email_admins_handler)
+
+
+
+# LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+#
+# # handlers
+# handlers_config = {
+#     'file_general': {
+#         'class': 'logging.FileHandler',
+#         'level': logging.INFO,
+#         'formatter': 'general_format',
+#         'filename': os.path.join(LOGS_DIR, 'general.log'),
+#     },
+#     'file_errors': {
+#         'class': 'logging.FileHandler',
+#         'level': logging.ERROR,
+#         'formatter': 'errors_format',
+#         'filename': os.path.join(LOGS_DIR, 'errors.log'),
+#     },
+#     'file_security': {
+#         'class': 'logging.FileHandler',
+#         'level': logging.INFO,
+#         'formatter': 'security_format',
+#         'filename': os.path.join(LOGS_DIR, 'security.log'),
+#     },
+#     'email_admins': {
+#         'class': 'logging.handlers.SMTPHandler',
+#         'level': logging.ERROR,
+#         'formatter': 'errors_format',
+#         'mailhost': 'localhost',
+#         'fromaddr': 'gefest-173@yandex.ru',
+#         'toaddrs': ['alek.kolark@gmail.com', 'alekolar17982@gmail.com'],
+#         'subject': 'Error in app',
+#     }
+# }
+#
+# # formaters
+# formatters_config = {
+#     'general_format': {
+#         'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
+#     },
+#     'errors_format': {
+#         'format': '%(levelname)s %(asctime)s %(module)s %(message)s %(pathname)s'
+#     },
+#     'security_format': {
+#         'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
+#     },
+# }
+#
+# # loggers
+# loggers_config = {
+#     '': {  # Root logger
+#         'handlers': ['file_general', 'file_errors', 'file_security', 'email_admins'],
+#         'level': logging.DEBUG,
+#     }
+# }
+#
+# #  settings
+# logging.basicConfig(level=logging.DEBUG)
+#
+# # logging configuration
+# logging.config.dictConfig({
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': handlers_config,
+#     'formatters': formatters_config,
+#     'loggers': loggers_config,
+# })
