@@ -19,12 +19,12 @@ from django.forms.models import model_to_dict
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
 
-
 User = get_user_model()
 
 
 def index(request):
     return render(request, 'index.html')
+
 
 @cache_page(300)
 @login_required
@@ -39,7 +39,8 @@ def news_full_detail(request, id):
     news_article = get_object_or_404(Post, id=id)
     return render(request, 'news_full_detail.html', {'post': news_article, 'id': id})
 
-#@cache_page(300)
+
+# @cache_page(300)
 @login_required
 def articles_full_detail(request, id):
     post = get_object_or_404(Post, id=id)
@@ -79,6 +80,7 @@ class NewsListView(ListView):
         context['filter'] = PostFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
+
 class SubscribeToNewsView(View):
     @method_decorator(csrf_exempt)
     def post(self, request, *args, **kwargs):
@@ -98,6 +100,7 @@ class ArticlesListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['filter'] = PostFilter(self.request.GET, queryset=self.get_queryset())
         return context
+
 
 class SubscribeToArticlesView(View):
     @method_decorator(csrf_exempt)
@@ -171,7 +174,6 @@ class PostCreate(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-
 class PostUpdate(LoginRequiredMixin, UpdateView):
     model = Post
     form_class = PostForm
@@ -191,7 +193,6 @@ class PostDelete(LoginRequiredMixin, DeleteView):
             return reverse_lazy('articles_list')
 
 
-
 def subscribe_news(request):
     try:
         news_category = Category.objects.get(name='News', post_type='news')
@@ -201,6 +202,7 @@ def subscribe_news(request):
     news_category.subscribe_user(request.user)
     return JsonResponse({'message': 'Subscribed to News successfully'}, status=200)
 
+
 def subscribe_articles(request):
     try:
         articles_category = Category.objects.get(name='Articles', post_type='article')
@@ -209,3 +211,8 @@ def subscribe_articles(request):
 
     articles_category.subscribe_user(request.user)
     return JsonResponse({'message': 'Subscribed to Articles successfully'}, status=200)
+
+
+def q_news(request):
+    posts = Post.objects.all()
+    return render(request, 'q_news.html', {'posts': posts})
