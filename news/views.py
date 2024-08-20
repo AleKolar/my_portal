@@ -26,7 +26,7 @@ def index(request):
     return render(request, 'index.html')
 
 
-@cache_page(300)
+#@cache_page(300)
 @login_required
 def news_full_detail(request, id):
     post = Post.objects.get(pk=id)

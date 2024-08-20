@@ -12,7 +12,7 @@ import logging
 
 
 
-logger = logging.getLogger(__name__)
+#logger = logging.getLogger(__name__)
 
 
 @shared_task
@@ -37,7 +37,7 @@ def send_email_notification_to_subscribers(post_name, post_content, created, pos
             html_message = f"<h2>Hello, {username}! New {post_type}: {post_title}</h2><p>{post_content[:50]}</p><a href='{post_url}'>Read more</a>"
             plain_message = f"Hello, {username}. A new {post_type} is available: {post_title}\n\n{post_content[:50]}\nRead more at: {post_url}"
 
-            logger.debug("Starting email notification task...")
+            # logger.debug("Starting email notification task...")
 
             try:
                 send_mail(
@@ -48,10 +48,10 @@ def send_email_notification_to_subscribers(post_name, post_content, created, pos
                     html_message=html_message,
                 )
                 print(f"Email sent to {user_email}")
-                logger.info(f"Email sent to {user_email}")
+                # logger.info(f"Email sent to {user_email}")
             except Exception as e:
                 print(f"Failed to send email to {user_email}: {str(e)}")
-                logger.error(f"Failed to send email to {user_email}: {str(e)}")
+                # logger.error(f"Failed to send email to {user_email}: {str(e)}")
 
 
 
