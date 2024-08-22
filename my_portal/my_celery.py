@@ -4,8 +4,6 @@ from django.conf import settings
 import django
 from celery.schedules import crontab
 
-
-
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "my_portal.settings")
 
 django.setup()

@@ -17,7 +17,6 @@ from email.message import EmailMessage
 import email.utils
 import ssl
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -141,10 +140,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
 
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
-
 
 LOGIN_URL = 'sign/login/'
 
@@ -191,6 +189,10 @@ with smtplib.SMTP_SSL(EMAIL_HOST, EMAIL_PORT, context=context) as server:
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
+# import environ
+# env = environ.Env()
+# DEFAULT_FROM_EMAIL = env.str('MY_PASSWORD')
+
 DEFAULT_FROM_EMAIL = 'Mn14071979'
 
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 20
@@ -203,30 +205,23 @@ CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 
 CELERY_RESULT_BACKEND = 'rpc://'
 
-
-
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': os.path.join(BASE_DIR, 'cache_files'), # Указываем, куда будем сохранять кэшируемые файлы! Не забываем создать папку cache_files внутри папки с manage.py!
+        'LOCATION': os.path.join(BASE_DIR, 'cache_files'),
+        # Указываем, куда будем сохранять кэшируемые файлы! Не забываем создать папку cache_files внутри папки с manage.py!
     }
 }
 
-
-
 '''
 Я смог сделать logging требуемой конфигурации файла журнала, 
-только, в упрощенной конфигурацию ,без явной ссылки на 'my_portal'
+только, при помощи конструктора basicConfig(),без явной ссылки на 'my_portal'
 '''
-
-
 
 LOGS_DIR = os.path.join(BASE_DIR, 'logs')
 
-
 logging.basicConfig(level=logging.DEBUG)
 
-# Define and configure file handlers
 file_general_handler = logging.FileHandler(os.path.join(LOGS_DIR, 'general.log'))
 file_general_handler.setLevel(logging.INFO)
 file_general_format = logging.Formatter('%(levelname)s %(asctime)s %(module)s %(message)s')
@@ -261,6 +256,7 @@ class SSLSMTPHandler(logging.handlers.SMTPHandler):
             self.server.send_message(msg, self.fromaddr, self.toaddrs)
         except (KeyboardInterrupt, SystemExit):
             raise
+
 
 email_admins_handler = SSLSMTPHandler(
     mailhost=EMAIL_HOST,
