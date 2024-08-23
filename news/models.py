@@ -20,7 +20,7 @@ class Author(models.Model):
     def __str__(self):
         return self.user.username
 
-    # Как-то не пришлось ей воспользоваться
+    
     def best_user(self):
         best_author = Author.objects.all().order_by('-rating').first()
         best_user = best_author.user
