@@ -209,7 +209,6 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
         'LOCATION': os.path.join(BASE_DIR, 'cache_files'),
-        # Указываем, куда будем сохранять кэшируемые файлы! Не забываем создать папку cache_files внутри папки с manage.py!
     }
 }
 
@@ -234,8 +233,14 @@ file_errors_handler.setFormatter(file_errors_format)
 
 file_security_handler = logging.FileHandler(os.path.join(LOGS_DIR, 'security.log'))
 file_security_handler.setLevel(logging.INFO)
+file_security_handler.addFilter(logging.Filter('django.security'))
 file_security_format = logging.Formatter('%(levelname)s %(asctime)s %(module)s %(message)s')
 file_security_handler.setFormatter(file_security_format)
+
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+console_format = logging.Formatter('%(levelname)s %(asctime)s %(pathname)s %(module)s %(message)s')
+console_handler.setFormatter(console_format)
 
 
 class SSLSMTPHandler(logging.handlers.SMTPHandler):
@@ -274,6 +279,7 @@ root_logger.addHandler(file_general_handler)
 root_logger.addHandler(file_errors_handler)
 root_logger.addHandler(file_security_handler)
 root_logger.addHandler(email_admins_handler)
+root_logger.addHandler(console_handler)
 
 root_logger.setLevel(logging.DEBUG)
 

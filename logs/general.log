@@ -1,5 +1,5 @@
-ERROR 2024-08-23 17:30:20,460 settings Test error message
-ERROR 2024-08-23 17:30:21,871 signal Signal handler <bound method DjangoFixup.on_import_modules of <celery.fixups.django.DjangoFixup object at 0x000001ADAD4355D0>> raised: NameError("name 'r' is not defined")
+ERROR 2024-08-23 17:55:40,653 settings Test error message
+ERROR 2024-08-23 17:55:41,518 signal Signal handler <bound method DjangoFixup.on_import_modules of <celery.fixups.django.DjangoFixup object at 0x000001F977495660>> raised: NameError("name 'r' is not defined")
 Traceback (most recent call last):
   File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\site-packages\celery\utils\dispatch\signal.py", line 276, in send
     response = receiver(signal=self, sender=sender, **named)
@@ -34,9 +34,7 @@ Traceback (most recent call last):
   File "C:\Users\User\PycharmProjects\my_portal\news\views.py", line 24, in <module>
     r
 NameError: name 'r' is not defined
-ERROR 2024-08-23 17:30:55,253 settings Test error message
-ERROR 2024-08-23 17:31:10,218 settings Test error message
-ERROR 2024-08-23 17:31:29,933 settings Test error message
-ERROR 2024-08-23 17:31:33,027 settings Test error message
-INFO 2024-08-23 17:31:33,687 autoreload Watching for file changes with StatReloader
-WARNING 2024-08-23 17:31:35,433 log Not Found: /favicon.ico
+ERROR 2024-08-23 17:56:04,845 settings Test error message
+ERROR 2024-08-23 17:56:31,301 settings Test error message
+ERROR 2024-08-23 17:56:34,560 settings Test error message
+INFO 2024-08-23 17:56:35,346 autoreload Watching for file changes with StatReloader
