@@ -1,4 +1,7 @@
 {% extends 'flatpages/default.html' %}
+{% load i18n %}
+{% trans "Login" %}
+{% blocktrans count object.sets as sets %}{{ sets }} set{% plural %}{{ sets }} sets{% endblocktrans %}
 {% load censor %}
 <!--{% load cache %}-->
 
