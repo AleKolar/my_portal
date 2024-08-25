@@ -30,6 +30,7 @@ from sign.views import upgrade_me, BaseRegisterView, CustomLogoutView, update_pr
 from django.conf import settings
 from django.conf.urls.static import static
 
+from news.views import Index
 
 app_name = 'sign'
 
@@ -142,10 +143,15 @@ urlpatterns = [
     # path('login/protect/news/<int:id>/', views.protect_news, name='protect_news'),
     # path('login/protect/articles/<int:id>/', views.protect_articles, name='protect_articles'),
 
-    path('q_news', views.q_news, name='q_news.html')
+    path('q_news', views.q_news, name='q_news.html'),
+
+
+    path('locale/', views.Index.as_view(), name='Index'),
 
 
     ]
+
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

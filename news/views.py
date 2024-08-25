@@ -18,9 +18,16 @@ from .tasks import send_email_notification_to_subscribers
 from django.forms.models import model_to_dict
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
+from django.utils.translation import gettext as _
+
 
 User = get_user_model()
 
+
+class Index(View):
+    def get(self, request):
+        string = _('Hello world')
+        return HttpResponse(string)
 
 def index(request):
     return render(request, 'index.html')

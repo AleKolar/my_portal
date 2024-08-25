@@ -51,3 +51,121 @@ ERROR 2024-08-24 20:11:38,252 settings Test error message
 ERROR 2024-08-24 20:11:41,684 settings Test error message
 INFO 2024-08-24 20:11:42,455 autoreload Watching for file changes with StatReloader
 WARNING 2024-08-24 20:11:51,018 log Not Found: /favicon.ico
+ERROR 2024-08-25 12:33:13,982 settings Test error message
+ERROR 2024-08-25 12:33:28,822 settings Test error message
+ERROR 2024-08-25 12:33:42,373 settings Test error message
+ERROR 2024-08-25 12:33:45,491 settings Test error message
+INFO 2024-08-25 12:33:46,076 autoreload Watching for file changes with StatReloader
+WARNING 2024-08-25 12:33:47,789 log Not Found: /favicon.ico
+INFO 2024-08-25 12:35:11,299 autoreload C:\Users\User\PycharmProjects\my_portal\my_portal\settings.py changed, reloading.
+ERROR 2024-08-25 12:36:19,914 settings Test error message
+ERROR 2024-08-25 12:36:23,035 settings Test error message
+INFO 2024-08-25 12:36:23,743 autoreload Watching for file changes with StatReloader
+WARNING 2024-08-25 12:37:16,866 log Not Found: /locale/Index
+WARNING 2024-08-25 12:37:40,386 log Not Found: /locale/Index
+INFO 2024-08-25 12:37:40,469 autoreload C:\Users\User\PycharmProjects\my_portal\my_portal\urls.py changed, reloading.
+ERROR 2024-08-25 12:37:43,061 settings Test error message
+INFO 2024-08-25 12:37:43,731 autoreload Watching for file changes with StatReloader
+INFO 2024-08-25 12:38:08,335 autoreload C:\Users\User\PycharmProjects\my_portal\my_portal\urls.py changed, reloading.
+ERROR 2024-08-25 12:38:11,193 settings Test error message
+INFO 2024-08-25 12:38:11,951 autoreload Watching for file changes with StatReloader
+ERROR 2024-08-25 12:44:19,364 settings Test error message
+ERROR 2024-08-25 12:46:17,676 settings Test error message
+ERROR 2024-08-25 12:46:20,684 settings Test error message
+INFO 2024-08-25 12:46:21,412 autoreload Watching for file changes with StatReloader
+ERROR 2024-08-25 12:47:25,568 settings Test error message
+ERROR 2024-08-25 12:48:57,685 settings Test error message
+ERROR 2024-08-25 12:49:00,948 settings Test error message
+INFO 2024-08-25 12:49:01,655 autoreload Watching for file changes with StatReloader
+ERROR 2024-08-25 12:51:51,375 settings Test error message
+ERROR 2024-08-25 12:52:20,190 settings Test error message
+ERROR 2024-08-25 12:52:23,268 settings Test error message
+INFO 2024-08-25 12:52:23,865 autoreload Watching for file changes with StatReloader
+INFO 2024-08-25 12:57:01,364 autoreload C:\Users\User\PycharmProjects\my_portal\my_portal\urls.py changed, reloading.
+ERROR 2024-08-25 12:57:03,991 settings Test error message
+INFO 2024-08-25 12:57:04,639 autoreload Watching for file changes with StatReloader
+ERROR 2024-08-25 12:58:01,127 settings Test error message
+ERROR 2024-08-25 12:58:11,903 settings Test error message
+ERROR 2024-08-25 12:58:14,963 settings Test error message
+INFO 2024-08-25 12:58:15,486 autoreload Watching for file changes with StatReloader
+INFO 2024-08-25 13:02:23,310 autoreload C:\Users\User\PycharmProjects\my_portal\my_portal\urls.py changed, reloading.
+ERROR 2024-08-25 13:02:26,004 settings Test error message
+INFO 2024-08-25 13:02:26,782 autoreload Watching for file changes with StatReloader
+WARNING 2024-08-25 13:02:40,889 log Not Found: /Index
+WARNING 2024-08-25 13:02:46,589 log Not Found: /Index
+WARNING 2024-08-25 13:04:24,786 log Not Found: /Index
+INFO 2024-08-25 13:04:25,348 autoreload C:\Users\User\PycharmProjects\my_portal\my_portal\urls.py changed, reloading.
+ERROR 2024-08-25 13:04:27,919 settings Test error message
+INFO 2024-08-25 13:04:28,398 autoreload Watching for file changes with StatReloader
+WARNING 2024-08-25 13:04:29,109 log Not Found: /Index
+WARNING 2024-08-25 13:04:59,168 log Not Found: /Index
+INFO 2024-08-25 13:04:59,329 autoreload C:\Users\User\PycharmProjects\my_portal\my_portal\urls.py changed, reloading.
+ERROR 2024-08-25 13:05:02,056 settings Test error message
+INFO 2024-08-25 13:05:02,680 autoreload Watching for file changes with StatReloader
+WARNING 2024-08-25 13:05:02,875 log Not Found: /Index
+WARNING 2024-08-25 13:05:04,367 log Not Found: /Index
+WARNING 2024-08-25 13:05:05,272 log Not Found: /Index
+WARNING 2024-08-25 13:05:20,168 log Not Found: /Index
+INFO 2024-08-25 13:05:20,993 autoreload C:\Users\User\PycharmProjects\my_portal\my_portal\urls.py changed, reloading.
+ERROR 2024-08-25 13:05:23,632 settings Test error message
+INFO 2024-08-25 13:05:24,220 autoreload Watching for file changes with StatReloader
+INFO 2024-08-25 13:07:23,623 autoreload C:\Users\User\PycharmProjects\my_portal\my_portal\urls.py changed, reloading.
+ERROR 2024-08-25 13:07:26,319 settings Test error message
+INFO 2024-08-25 13:07:27,078 autoreload Watching for file changes with StatReloader
+ERROR 2024-08-25 13:08:57,033 settings Test error message
+ERROR 2024-08-25 13:09:00,228 settings Test error message
+INFO 2024-08-25 13:09:00,873 autoreload Watching for file changes with StatReloader
+INFO 2024-08-25 13:09:57,000 autoreload C:\Users\User\PycharmProjects\my_portal\my_portal\urls.py changed, reloading.
+ERROR 2024-08-25 13:09:59,685 settings Test error message
+INFO 2024-08-25 13:10:00,413 autoreload Watching for file changes with StatReloader
+WARNING 2024-08-25 13:10:22,434 log Not Found: /Index
+WARNING 2024-08-25 13:10:33,336 log Not Found: /locale/Index
+WARNING 2024-08-25 13:10:38,452 log Not Found: /locale/
+WARNING 2024-08-25 13:10:40,364 log Not Found: /locale/
+WARNING 2024-08-25 13:10:41,172 log Not Found: /locale/
+INFO 2024-08-25 13:14:14,304 autoreload C:\Users\User\PycharmProjects\my_portal\my_portal\urls.py changed, reloading.
+ERROR 2024-08-25 13:14:16,938 settings Test error message
+INFO 2024-08-25 13:14:17,655 autoreload Watching for file changes with StatReloader
+WARNING 2024-08-25 13:14:18,603 log Not Found: /locale/
+INFO 2024-08-25 13:15:40,222 autoreload C:\Users\User\PycharmProjects\my_portal\my_portal\urls.py changed, reloading.
+ERROR 2024-08-25 13:15:42,934 settings Test error message
+INFO 2024-08-25 13:15:43,656 autoreload Watching for file changes with StatReloader
+ERROR 2024-08-25 13:17:35,270 settings Test error message
+ERROR 2024-08-25 13:18:27,835 settings Test error message
+ERROR 2024-08-25 13:18:31,041 settings Test error message
+INFO 2024-08-25 13:18:31,779 autoreload Watching for file changes with StatReloader
+ERROR 2024-08-25 13:25:42,310 settings Test error message
+ERROR 2024-08-25 13:26:42,042 settings Test error message
+ERROR 2024-08-25 13:28:21,308 settings Test error message
+ERROR 2024-08-25 13:30:39,921 settings Test error message
+ERROR 2024-08-25 13:30:52,149 settings Test error message
+ERROR 2024-08-25 13:31:08,593 settings Test error message
+ERROR 2024-08-25 13:38:47,525 settings Test error message
+ERROR 2024-08-25 13:39:11,749 settings Test error message
+ERROR 2024-08-25 13:39:14,821 settings Test error message
+INFO 2024-08-25 13:39:15,479 autoreload Watching for file changes with StatReloader
+WARNING 2024-08-25 13:39:29,215 log Not Found: /Index
+WARNING 2024-08-25 13:39:30,589 log Not Found: /Index
+WARNING 2024-08-25 13:39:31,519 log Not Found: /Index
+WARNING 2024-08-25 13:39:41,778 log Not Found: /locale/Index
+WARNING 2024-08-25 13:39:43,358 log Not Found: /locale/Index
+WARNING 2024-08-25 13:39:44,286 log Not Found: /locale/Index
+WARNING 2024-08-25 13:40:09,797 log Not Found: /locale/Index
+WARNING 2024-08-25 13:40:10,745 log Not Found: /locale/Index
+WARNING 2024-08-25 13:40:16,764 log Not Found: /locale/Index
+WARNING 2024-08-25 13:40:17,830 log Not Found: /locale/Index
+WARNING 2024-08-25 13:40:18,758 log Not Found: /locale/Index
+INFO 2024-08-25 13:42:10,009 autoreload C:\Users\User\PycharmProjects\my_portal\my_portal\urls.py changed, reloading.
+ERROR 2024-08-25 13:42:22,100 settings Test error message
+ERROR 2024-08-25 13:42:25,253 settings Test error message
+INFO 2024-08-25 13:42:25,996 autoreload Watching for file changes with StatReloader
+WARNING 2024-08-25 13:42:42,476 log Not Found: /Index
+WARNING 2024-08-25 13:42:44,144 log Not Found: /Index
+WARNING 2024-08-25 13:42:51,659 log Not Found: /Index
+INFO 2024-08-25 13:42:52,185 autoreload C:\Users\User\PycharmProjects\my_portal\my_portal\urls.py changed, reloading.
+ERROR 2024-08-25 13:42:54,719 settings Test error message
+INFO 2024-08-25 13:42:55,283 autoreload Watching for file changes with StatReloader
+WARNING 2024-08-25 13:42:55,619 log Not Found: /Index
+WARNING 2024-08-25 13:43:14,395 log Not Found: /Index
+INFO 2024-08-25 13:43:14,658 autoreload C:\Users\User\PycharmProjects\my_portal\my_portal\urls.py changed, reloading.
+ERROR 2024-08-25 13:43:17,182 settings Test error message
