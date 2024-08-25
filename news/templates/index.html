@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load i18n %}
 <html lang="en">
     <head>
         <meta charset="utf-8" />
@@ -34,7 +35,8 @@
                 </div>
             </div>
         </nav>
-        <!-- Page content-->
+        {{ string }} <!-- Это уже знакомая нам переменная, просто засунули её в шаблон -->
+        {% trans "Check out my new cool translation" %}! <!-- Переводим строку -->
         <div class="container">
             <div class="text-center mt-5">
                 <h1>A Bootstrap 5 Starter Template</h1>

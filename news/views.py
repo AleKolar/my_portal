@@ -27,7 +27,8 @@ User = get_user_model()
 class Index(View):
     def get(self, request):
         string = _('Hello world')
-        return HttpResponse(string)
+        context = {'string': string}
+        return HttpResponse(render(request, 'index_msg.html', context))
 
 def index(request):
     return render(request, 'index.html')
