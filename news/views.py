@@ -20,7 +20,6 @@ from django.views.decorators.cache import cache_page
 from django.core.cache import cache
 from django.utils.translation import gettext as _
 
-
 User = get_user_model()
 
 

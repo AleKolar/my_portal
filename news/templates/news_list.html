@@ -1,22 +1,37 @@
 {% extends 'flatpages/default.html' %}
 {% load i18n %}
-{% trans "Login" %}
-{% blocktrans count object.sets as sets %}{{ sets }} set{% plural %}{{ sets }} sets{% endblocktrans %}
+<!-- {% blocktrans count object.sets as sets %}{{ sets }} set{% plural %}{{ sets }} sets{% endblocktrans %} -->
 {% load censor %}
 <!--{% load cache %}-->
 
 {% block content %}
 
-<h1><***News***></h1>
+<h1><{% trans "***News***" %}></h1>
+
+<form action="{% url 'set_language' %}" method="POST"> {% csrf_token %} <!-- Не забываем по csrf_token для POST запросов -->
+    <input type="hidden" name="next" value="{{ redirect_to }}">
+
+    <select name="language" id="">
+        {% get_available_languages as LANGUAGES %} <!-- получаем языки -->
+        {% get_language_info_list for LANGUAGES as languages %} <!-- Помещаем их в список languages -->
+        {% get_current_language as LANGUAGE_CODE %}
+        {% for language in languages %} <!-- Итерируясь по списку, выводим их название на языке пользователя и код -->
+        <option value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %} selected {% endif %}>
+            {{ language.name_local }} - {{ language.code }}
+        </option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="set">
+</form>
 
 <!-- {% cache 60 posts_cache_key %} -->
 {% for post in posts %}
 <a href="{% url 'news_full_detail' id=post.id %}" class="btn btn-warning">Подробнее
     <h2>{{ post.title|censor }}</h2>
-</a>
-<p><strong>Published:</strong> {{ post.created_at|date:"d.m.Y" }}</p>
-<p>{{ post.content|slice:":21"|censor }}</p>
-<p><strong>Автор:</strong> {{ post.author }}</p>
+        </a>
+    <p><strong>Published:</strong> {{ post.created_at|date:"d.m.Y" }}</p>
+    <p>{{ post.content|slice:":21"|censor }}</p>
+    <p><strong>Автор:</strong> {{post.author}}</p>
 {% endfor %}
 <!-- {% endcache %} -->
 
@@ -24,7 +39,7 @@
     <input type="hidden" name="subscription_type" value="news">
     <input type="hidden" name="next" value="{{ request.path }}">
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-    <button type="submit">Subscribe to News</button>
+    <button type="submit">{% trans "Subscribe to News" %}</button>
 </form>
 
 {# Добавляем пагинацию на страницу #}
