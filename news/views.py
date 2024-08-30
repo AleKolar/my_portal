@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+
+from .admin import MyPostAdmin
 from .filters import PostFilter
 from .forms import PostForm, CommentForm
 from .models import Post, Author, Category, PostCategory
@@ -23,11 +25,23 @@ from django.utils.translation import gettext as _
 User = get_user_model()
 
 
+# class Index(View):
+#     def get(self, request):
+#         string = _('Hello world')
+#         context = {'string': string}
+#         return HttpResponse(render(request, 'index_msg.html', context))
+
 class Index(View):
     def get(self, request):
-        string = _('Hello world')
-        context = {'string': string}
-        return HttpResponse(render(request, 'index_msg.html', context))
+        # . Translators: This message appears on the home page only
+        models = Post.objects.all()
+
+        context = {
+            'models': models,
+        }
+
+        return HttpResponse(render(request, 'index_trans.html', context))
+
 
 def index(request):
     return render(request, 'index.html')
