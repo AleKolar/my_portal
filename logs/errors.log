@@ -8141,3 +8141,5 @@ Traceback (most recent call last):
 TypeError: 'Post' object is not iterable
 ERROR 2024-08-30 18:09:37,453 settings Test error message C:\Users\User\PycharmProjects\my_portal\my_portal\settings.py
 ERROR 2024-08-30 18:10:22,754 settings Test error message C:\Users\User\PycharmProjects\my_portal\my_portal\settings.py
+ERROR 2024-08-30 19:27:41,600 settings Test error message C:\Users\User\PycharmProjects\my_portal\my_portal\settings.py
+ERROR 2024-08-30 19:27:43,312 settings Test error message C:\Users\User\PycharmProjects\my_portal\my_portal\settings.py

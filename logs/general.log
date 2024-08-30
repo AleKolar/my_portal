@@ -8171,3 +8171,6 @@ INFO 2024-08-30 18:09:38,137 autoreload Watching for file changes with StatReloa
 INFO 2024-08-30 18:10:21,852 autoreload C:\Users\User\PycharmProjects\my_portal\news\views.py changed, reloading.
 ERROR 2024-08-30 18:10:22,754 settings Test error message
 INFO 2024-08-30 18:10:23,908 autoreload Watching for file changes with StatReloader
+ERROR 2024-08-30 19:27:41,600 settings Test error message
+ERROR 2024-08-30 19:27:43,312 settings Test error message
+INFO 2024-08-30 19:27:43,900 autoreload Watching for file changes with StatReloader
