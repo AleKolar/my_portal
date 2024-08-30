@@ -33,14 +33,13 @@ User = get_user_model()
 
 class Index(View):
     def get(self, request):
-        # . Translators: This message appears on the home page only
-        models = Post.objects.all()
-
+        queryset = Post.objects.filter(post_type='news').order_by('-created_at')
         context = {
-            'models': models,
+            'posts': queryset,
         }
 
         return HttpResponse(render(request, 'index_trans.html', context))
+
 
 
 def index(request):
