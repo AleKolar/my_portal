@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .filters import PostFilter
 from .forms import PostForm, CommentForm
-from .models import Post, Author, Category, PostCategory
+from .models import Post, Author, Category, PostCategory, Comment
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -67,7 +67,6 @@ def news_full_detail(request, id):
 
 
 # @cache_page(300)
-@login_required
 def articles_full_detail(request, id):
     post = get_object_or_404(Post, id=id)
     post_info = {
@@ -76,6 +75,9 @@ def articles_full_detail(request, id):
         'publish_date': post.created_at.strftime('%d.%m.%Y'),
         'author': post.authorname,
     }
+
+    # Retrieve all comments related to the post
+    comments = Comment.objects.filter(post=post).order_by('-created_at')
 
     if request.method == 'POST':
         form = CommentForm(request.POST)
@@ -87,10 +89,14 @@ def articles_full_detail(request, id):
             new_comment.author = author_instance
             new_comment.save()
             messages.success(request, "Comment added successfully!")
+
+            # Redirect to the same URL after successfully adding the comment
+            return redirect('articles_full_detail', id=id)
     else:
         form = CommentForm()
 
-    return render(request, 'articles_full_detail.html', {'post': post, 'id': id, 'comment_form': form}, )
+    return render(request, 'articles_full_detail.html',
+                  {'post': post, 'id': id, 'comment_form': form, 'comments': comments})
 
 
 @method_decorator(login_required, name='dispatch')
