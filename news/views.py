@@ -6,7 +6,6 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
-from .admin import MyPostAdmin
 from .filters import PostFilter
 from .forms import PostForm, CommentForm
 from .models import Post, Author, Category, PostCategory
@@ -20,9 +19,9 @@ from django.contrib.auth import get_user_model
 from django.views.generic import View
 from .tasks import send_email_notification_to_subscribers
 from django.forms.models import model_to_dict
-from django.views.decorators.cache import cache_page
-from django.core.cache import cache
-from django.utils.translation import gettext as _
+
+
+
 
 User = get_user_model()
 

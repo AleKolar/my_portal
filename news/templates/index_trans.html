@@ -4,71 +4,82 @@
 {% load tz %}
 
 <html lang="en">
+<head>
 
-{% block content %}
+    <title>News</title>
 
-<h1><***News***></h1>
-
-{% for post in posts %}
-<a href="{% url 'news_full_detail' id=post.id %}" class="btn btn-warning">Подробнее
+</head>
+<body>
+    {% block content %}
+    <h1>News</h1>
+    {% for post in posts %}
     <h2>{{ post.title|censor }}</h2>
-</a>
-<p><strong>Published:</strong> {{ post.created_at|date:"d.m.Y" }}</p>
-<p>{{ post.content|slice:":21"|censor }}</p>
-<p><strong>Автор:</strong> {{ post.author }}</p>
-{% endfor %}
-
-
-<form action="{% url 'set_language' %}" method="POST"> {% csrf_token %}
-    <!-- Не забываем по csrf_token для POST-запросов -->
-    <input type="hidden" name="next" value="{{ redirect_to }}">
-
-    <select name="language" id="">
-        {% get_available_languages as LANGUAGES %} <!-- получаем языки -->
-        {% get_language_info_list for LANGUAGES as languages %} <!-- Помещаем их в список languages -->
-
-        {% for language in languages %} <!-- Итерируясь по списку, выводим их название на языке пользователя и код -->
-        <option value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %} selected {% endif %}>
-            {{ language.name_local }} - {{ language.code }}
-        </option>
-        {% endfor %}
-    </select>
-    <input type="submit" value="set">
-</form>
-
-
-{% get_current_timezone as TIME_ZONE %}
-<form action="" method="POST">
-    {% csrf_token %}
-    <label for="timezone">Time zone:</label>
-<select id="timezone" name="timezone">
-    {% for tz in timezones %}
-        <option value="{{ tz }}" {% if tz == TIME_ZONE %} selected {% endif %}>{{ tz }}</option>
+    <a href="{% url 'news_full_detail' id=post.id %}" class="btn btn-warning">Read More</a>
+    <p><strong>Published:</strong> {{ post.created_at|date:"d.m.Y" }}</p>
+    <p>{{ post.content|slice:":21"|censor }}</p>
+    <p><strong>Author:</strong> {{ post.author }}</p>
     {% endfor %}
-</select>
-    <input type="submit" value="Set">
-</form>
 
-<style>
-    body {background-color: {% if current_time.hour >= 19 or current_time.hour <= 7 %} darkcyan {% else %} powderblue {% endif %};}
-</style>
+    <form action="{% url 'set_language' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ redirect_to }}">
+        <select name="language" id="">
+            {% get_available_languages as LANGUAGES %}
+            {% get_language_info_list for LANGUAGES as languages %}
+            {% for language in languages %}
+            <option value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %} selected {% endif %}>
+                {{ language.name_local }} - {{ language.code }}
+            </option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Set">
+    </form>
 
-{{ TIME_ZONE }}
-{{ current_time|timezone:TIME_ZONE }}
+    {% get_current_timezone as TIME_ZONE %}
+    <form action="" method="POST">
+        {% csrf_token %}
+        <label for="timezone">Time zone:</label>
+        <select id="timezone" name="timezone">
+            {% for tz in timezones %}
+            <option value="{{ tz }}" {% if tz == TIME_ZONE %} selected {% endif %}>{{ tz }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Set">
+    </form>
+
+    <!-- {% load humanize %}
+
+     <style>
+        body {background-color: {% if current_time|time:"P" == "a.m." or current_time|time:"P" == "p.m." %} darkcyan {% else %} powderblue {% endif %};}
+    </style> -->
 
 
-{% for model in models %}
-<div class="model-class">
-    {{ model.name }}
-</div>
-{% endfor %}
+    <style>
+        body {background-color: {% if current_time.hour >= 19 or current_time.hour <= 7 %}  darkcyan {% else %}  powderblue {% endif %};}
+    </style>
 
-<form method="post" action="{% url 'subscribe_news' %}">
-    <input type="hidden" name="subscription_type" value="news">
-    <input type="hidden" name="next" value="{{ request.path }}">
-    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-    <button type="submit">Subscribe to News</button>
-</form>
+    <!-- Для отладки -->
+    <p>Current Hour: {{ current_time.hour }}</p>
+    <p>Is Night Time: {% if current_time.hour >= 19 or current_time.hour <= 7 %} True {% else %} False {% endif %}</p>
 
-{% endblock content %}
+    {{ TIME_ZONE }}
+    {{ current_time|timezone:TIME_ZONE }}
+
+    {% with models=Model.objects.all %}
+    {% for model in models %}
+    <div class="model-class">
+        {{ model.name }}
+    </div>
+    {% endfor %}
+    {% endwith %}
+
+    <form method="post" action="{% url 'subscribe_news' %}">
+        <input type="hidden" name="subscription_type" value="news">
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        <button type="submit">Subscribe to News</button>
+    </form>
+
+    {% endblock content %}
+</body>
 </html>

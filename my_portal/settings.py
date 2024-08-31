@@ -65,6 +65,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'django_apscheduler',
 
+    'django.contrib.humanize',
+
 ]
 
 MIDDLEWARE = [
