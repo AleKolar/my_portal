@@ -1,21 +1,19 @@
 {% extends 'flatpages/default.html' %}
 {% load censor %}
-<!-- {% load cache %} -->
 
 {% block content %}
 
 <h1><***News***></h1>
 
-<!-- {% cache 60 posts_cache_key %} -->
 {% for post in posts %}
-<a href="{% url 'news_full_detail' id=post.id %}" class="btn btn-warning">Подробнее
-    <h2>{{ post.title|censor }}</h2>
-</a>
-<p><strong>Published:</strong> {{ post.created_at|date:"d.m.Y" }}</p>
-<p>{{ post.content|slice:":21"|censor }}</p>
-<p><strong>Автор:</strong> {{ post.author }}</p>
+    {% if post.post_type == 'news' %}
+        <a href="{% url 'news_full_detail' id=post.id %}" class="btn btn-warning">Read More</a>
+        <h2>{{ post.title|censor }}</h2>
+        <p><strong>Published:</strong> {{ post.created_at|date:"d.m.Y" }}</p>
+        <p>{{ post.content|slice:":21"|censor }}</p>
+        <p><strong>Author:</strong> {{ post.author }}</p>
+    {% endif %}
 {% endfor %}
-<!-- {% endcache %} -->
 
 <form method="post" action="{% url 'subscribe_news' %}">
     <input type="hidden" name="subscription_type" value="news">
@@ -24,27 +22,23 @@
     <button type="submit">Subscribe to News</button>
 </form>
 
-{# Добавляем пагинацию на страницу #}
-
-{# Информация о предыдущих страницах #}
+{# Pagination #}
 {% if page_obj.has_previous %}
-<a href="?page=1">1</a>
-{% if page_obj.previous_page_number != 1 %}
-...
-<a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
-{% endif %}
+    <a href="?page=1">1</a>
+    {% if page_obj.previous_page_number != 1 %}
+        ...
+        <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+    {% endif %}
 {% endif %}
 
-{# Информация о текущей странице #}
 {{ page_obj.number }}
 
-{# Информация о следующих страницах #}
 {% if page_obj.has_next %}
-<a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
-{% if paginator.num_pages != page_obj.next_page_number %}
-...
-<a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
-{% endif %}
+    <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+    {% if paginator.num_pages != page_obj.next_page_number %}
+        ...
+        <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+    {% endif %}
 {% endif %}
 
 {% endblock content %}

@@ -40,11 +40,15 @@ app_name = 'sign'
 urlpatterns = [
     path('admin/', admin.site.urls),
 
+    path('post/', views.PostsListView.as_view(), name='posts_list'),
+
     path('news/', views.NewsListView.as_view(), name='news_list'),
 
     path('confirm_email/', upgrade_me, name='protect'),
 
     path('news/<int:id>/', views.news_full_detail, name='news_full_detail'),
+
+    path('articles/<int:id>/', views.articles_full_detail, name='articles_full_detail'),
 
     path('', include('sign.urls')),
 
@@ -79,7 +83,7 @@ urlpatterns = [
 
     path('login/protect/<int:pk>/delete', views.PostUpdate.as_view(), name='delete'),
 
-    path('login/protect/news/news_search', views.PostsListView.as_view(), name='news_search'),
+    path('login/protect/news/news_search',  views.PostsListView.as_view(), name='news_search'),
 
     ########path('sign/logout/', CustomLogoutView.as_view()),
 
@@ -148,7 +152,7 @@ urlpatterns = [
 
 
     path('i18n/', include('django.conf.urls.i18n')),
-    path('Index/', views.Index.as_view(), name='index_msg')
+    path('Index/', views.Index.as_view(), name='index_msg'),
 
 
     ]

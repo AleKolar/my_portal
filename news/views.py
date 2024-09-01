@@ -5,6 +5,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework import serializers
+from rest_framework.request import Request
 
 from .filters import PostFilter
 from .forms import PostForm, CommentForm
@@ -17,11 +19,10 @@ from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
 from django.views.generic import View
+
+from .serializer import PostSerializer, CommentSerializer
 from .tasks import send_email_notification_to_subscribers
 from django.forms.models import model_to_dict
-
-
-
 
 User = get_user_model()
 
@@ -48,36 +49,34 @@ class Index(View):
         request.session['django_timezone'] = request.POST['timezone']
         return redirect('/')
 
+
 def index(request):
     return render(request, 'index.html')
 
 
-#@cache_page(300)
+# @cache_page(300)
 @login_required
 def news_full_detail(request, id):
     post = Post.objects.get(pk=id)
-    post_info = {
-        'title': post.title,
-        'content': post.content,
-        'publish_date': post.created_at.strftime('%d.%m.%Y'),
-        'author': post.authorname,
-    }
-    news_article = get_object_or_404(Post, id=id)
-    return render(request, 'news_full_detail.html', {'post': news_article, 'id': id})
+    post_info = PostSerializer(post).data
+    return render(request, 'news_full_detail.html', {'post': post_info, 'id': id})
 
 
 # @cache_page(300)
+class CommentSerializer(serializers.ModelSerializer):
+    post = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all())  # Update this line
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
+
 def articles_full_detail(request, id):
     post = get_object_or_404(Post, id=id)
-    post_info = {
-        'title': post.title,
-        'content': post.content,
-        'publish_date': post.created_at.strftime('%d.%m.%Y'),
-        'author': post.authorname,
-    }
+    post_info = PostSerializer(post).data
 
-    # Retrieve all comments related to the post
     comments = Comment.objects.filter(post=post).order_by('-created_at')
+    comment_data = CommentSerializer(comments, many=True).data
 
     if request.method == 'POST':
         form = CommentForm(request.POST)
@@ -90,13 +89,38 @@ def articles_full_detail(request, id):
             new_comment.save()
             messages.success(request, "Comment added successfully!")
 
-            # Redirect to the same URL after successfully adding the comment
             return redirect('articles_full_detail', id=id)
     else:
         form = CommentForm()
 
     return render(request, 'articles_full_detail.html',
-                  {'post': post, 'id': id, 'comment_form': form, 'comments': comments})
+                  {'post': post_info, 'id': id, 'comment_form': form, 'comments': comment_data})
+
+
+def articles_full_detail(request, id):
+    post = get_object_or_404(Post, id=id)
+    post_info = PostSerializer(post).data
+
+    comments = Comment.objects.filter(post=post).order_by('-created_at')
+    comment_data = CommentSerializer(comments, many=True).data
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            new_comment = form.save(commit=False)
+            new_comment.post = post
+            new_comment.user = request.user
+            author_instance = Author.objects.get(user=request.user)
+            new_comment.author = author_instance
+            new_comment.save()
+            messages.success(request, "Comment added successfully!")
+
+            return redirect('articles_full_detail', id=id)
+    else:
+        form = CommentForm()
+
+    return render(request, 'articles_full_detail.html',
+                  {'post': post_info, 'id': id, 'comment_form': form, 'comments': comment_data})
 
 
 @method_decorator(login_required, name='dispatch')
@@ -106,6 +130,10 @@ class NewsListView(ListView):
     queryset = Post.objects.filter(post_type='news').order_by('-created_at')
     context_object_name = 'posts'
     paginate_by = 10
+    serializer_class = PostSerializer
+
+    def get_queryset(self):
+        return self.queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -127,6 +155,10 @@ class ArticlesListView(LoginRequiredMixin, ListView):
     queryset = Post.objects.filter(post_type='article').order_by('-created_at')
     context_object_name = 'posts'
     paginate_by = 10
+    serializer_class = PostSerializer
+
+    def get_queryset(self):
+        return self.queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -144,20 +176,49 @@ class SubscribeToArticlesView(View):
 
 class PostsListView(LoginRequiredMixin, ListView):
     model = Post
-    ordering = 'authorname', 'created_at'
-    template_name = 'news_search.html'
+    ordering = 'created_at'
+    template_name = 'posts_list.html'
     context_object_name = 'posts'
     paginate_by = 10
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        self.filterset = PostFilter(self.request.GET, queryset)
-        return self.filterset.qs
+        post_type = self.request.GET.get('post_type')
+        if post_type == 'news':
+            queryset = queryset.filter(post_type='news')
+        elif post_type == 'articles':
+            queryset = queryset.filter(post_type='articles')
+        return queryset
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['filterset'] = self.filterset
-        return context
+    def get_context_data(self, *, object_list=None, **kwargs):
+        queryset = object_list if object_list is not None else self.get_queryset()
+        page_size = self.get_paginate_by(queryset)
+        context_object_name = self.get_context_object_name(queryset)
+
+        if page_size:
+            paginator, page, queryset, is_paginated = self.paginate_queryset(queryset, page_size)
+            context = {
+                "paginator": paginator,
+                "page_obj": page,
+                "is_paginated": is_paginated,
+                "object_list": queryset,
+            }
+        else:
+            context = {
+                "paginator": None,
+                "page_obj": None,
+                "is_paginated": False,
+                "object_list": queryset,
+            }
+
+        if context_object_name is not None:
+            context[context_object_name] = queryset
+
+        context.update(kwargs)
+        return super().get_context_data(**context)
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, self.get_context_data())
 
 
 class PostCreate(LoginRequiredMixin, CreateView):
@@ -204,6 +265,14 @@ class PostCreate(LoginRequiredMixin, CreateView):
         created = True
         send_email_notification_to_subscribers.delay(post_name, post_content, created, post.id)
         return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['object_list'] = []  # Add an empty object_list attribute
+        return context
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, self.get_context_data())
 
 
 class PostUpdate(LoginRequiredMixin, UpdateView):

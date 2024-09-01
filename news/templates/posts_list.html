@@ -4,19 +4,20 @@
 {% block content %}
 
 <h1><***Posts***></h1>
+
+<button onclick="window.location.href='{% url 'news_list' %}'">Show News</button>
+<button onclick="window.location.href='{% url 'articles_list' %}'">Show Articles</button>
+
 {% for post in posts %}
-<a href="{% url 'posts_list' id=post.id %}" class="btn btn-warning">Подробнее
+  <div>
     <h2>{{ post.title|censor }}</h2>
-</a>
-<p><strong>Published:</strong> {{ post.created_at|date:"d.m.Y" }}</p>
-<p>{{ post.content|slice:":21"|censor }}</p>
-<p><strong>Автор:</strong> {{ post.authorname }}</p>
+    <p><strong>Published:</strong> {{ post.created_at|date:"d.m.Y" }}</p>
+    <p>{{ post.content|slice:":21"|censor }}</p>
+    <p><strong>Author:</strong> {{ post.authorname }}</p>
+  </div>
 {% endfor %}
 
-
-{# Добавляем пагинацию на страницу #}
-
-{# Информация о предыдущих страницах #}
+{# Pagination #}
 {% if page_obj.has_previous %}
 <a href="?page=1">1</a>
 {% if page_obj.previous_page_number != 1 %}
@@ -25,10 +26,8 @@
 {% endif %}
 {% endif %}
 
-{# Информация о текущей странице #}
 {{ page_obj.number }}
 
-{# Информация о следующих страницах #}
 {% if page_obj.has_next %}
 <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
 {% if paginator.num_pages != page_obj.next_page_number %}

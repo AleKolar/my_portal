@@ -236,70 +236,70 @@ CACHES = {
 только, при помощи конструктора basicConfig(),без явной ссылки на 'my_portal'
 '''
 
-LOGS_DIR = os.path.join(BASE_DIR, 'logs')
-
-logging.basicConfig(level=logging.DEBUG)
-
-file_general_handler = logging.FileHandler(os.path.join(LOGS_DIR, 'general.log'))
-file_general_handler.setLevel(logging.INFO)
-file_general_format = logging.Formatter('%(levelname)s %(asctime)s %(module)s %(message)s')
-file_general_handler.setFormatter(file_general_format)
-
-file_errors_handler = logging.FileHandler(os.path.join(LOGS_DIR, 'errors.log'))
-file_errors_handler.setLevel(logging.ERROR)
-file_errors_format = logging.Formatter('%(levelname)s %(asctime)s %(module)s %(message)s %(pathname)s')
-file_errors_handler.setFormatter(file_errors_format)
-
-file_security_handler = logging.FileHandler(os.path.join(LOGS_DIR, 'security.log'))
-file_security_handler.setLevel(logging.INFO)
-file_security_handler.addFilter(logging.Filter('django.security'))
-file_security_format = logging.Formatter('%(levelname)s %(asctime)s %(module)s %(message)s')
-file_security_handler.setFormatter(file_security_format)
-
-console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.DEBUG)
-console_format = logging.Formatter('%(levelname)s %(asctime)s %(pathname)s %(module)s %(message)s')
-console_handler.setFormatter(console_format)
-
-
-class SSLSMTPHandler(logging.handlers.SMTPHandler):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.server = smtplib.SMTP_SSL(self.mailhost, context=self.secure)
-
-    def emit(self, record):
-        try:
-            msg = EmailMessage()
-            msg['From'] = self.fromaddr
-            msg['To'] = ','.join(self.toaddrs)
-            msg['Subject'] = self.getSubject(record)
-            msg['Date'] = email.utils.localtime()
-            msg.set_content(self.format(record))
-            if self.username:
-                self.server.login(self.username, self.password)
-            self.server.send_message(msg, self.fromaddr, self.toaddrs)
-        except (KeyboardInterrupt, SystemExit):
-            raise
-
-
-email_admins_handler = SSLSMTPHandler(
-    mailhost=EMAIL_HOST,
-    fromaddr='gefest-173@yandex.ru',
-    toaddrs=['alek.kolark@gmail.com', 'alekolar17982@gmail.com'],
-    subject='Error in app',
-    credentials=(EMAIL_HOST_USER, EMAIL_HOST_PASSWORD),
-    secure=context
-)
-email_admins_handler.setLevel(logging.ERROR)
-email_admins_handler.setFormatter(logging.Formatter('%(levelname)s %(asctime)s %(module)s %(message)s'))
-
-root_logger = logging.getLogger('')
-root_logger.addHandler(file_general_handler)
-root_logger.addHandler(file_errors_handler)
-root_logger.addHandler(file_security_handler)
-root_logger.addHandler(email_admins_handler)
-root_logger.addHandler(console_handler)
-
-root_logger.setLevel(logging.DEBUG)
-
-root_logger.error("Test error message")
+# LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+#
+# logging.basicConfig(level=logging.DEBUG)
+#
+# file_general_handler = logging.FileHandler(os.path.join(LOGS_DIR, 'general.log'))
+# file_general_handler.setLevel(logging.INFO)
+# file_general_format = logging.Formatter('%(levelname)s %(asctime)s %(module)s %(message)s')
+# file_general_handler.setFormatter(file_general_format)
+#
+# file_errors_handler = logging.FileHandler(os.path.join(LOGS_DIR, 'errors.log'))
+# file_errors_handler.setLevel(logging.ERROR)
+# file_errors_format = logging.Formatter('%(levelname)s %(asctime)s %(module)s %(message)s %(pathname)s')
+# file_errors_handler.setFormatter(file_errors_format)
+#
+# file_security_handler = logging.FileHandler(os.path.join(LOGS_DIR, 'security.log'))
+# file_security_handler.setLevel(logging.INFO)
+# file_security_handler.addFilter(logging.Filter('django.security'))
+# file_security_format = logging.Formatter('%(levelname)s %(asctime)s %(module)s %(message)s')
+# file_security_handler.setFormatter(file_security_format)
+#
+# console_handler = logging.StreamHandler()
+# console_handler.setLevel(logging.DEBUG)
+# console_format = logging.Formatter('%(levelname)s %(asctime)s %(pathname)s %(module)s %(message)s')
+# console_handler.setFormatter(console_format)
+#
+#
+# class SSLSMTPHandler(logging.handlers.SMTPHandler):
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.server = smtplib.SMTP_SSL(self.mailhost, context=self.secure)
+#
+#     def emit(self, record):
+#         try:
+#             msg = EmailMessage()
+#             msg['From'] = self.fromaddr
+#             msg['To'] = ','.join(self.toaddrs)
+#             msg['Subject'] = self.getSubject(record)
+#             msg['Date'] = email.utils.localtime()
+#             msg.set_content(self.format(record))
+#             if self.username:
+#                 self.server.login(self.username, self.password)
+#             self.server.send_message(msg, self.fromaddr, self.toaddrs)
+#         except (KeyboardInterrupt, SystemExit):
+#             raise
+#
+#
+# email_admins_handler = SSLSMTPHandler(
+#     mailhost=EMAIL_HOST,
+#     fromaddr='gefest-173@yandex.ru',
+#     toaddrs=['alek.kolark@gmail.com', 'alekolar17982@gmail.com'],
+#     subject='Error in app',
+#     credentials=(EMAIL_HOST_USER, EMAIL_HOST_PASSWORD),
+#     secure=context
+# )
+# email_admins_handler.setLevel(logging.ERROR)
+# email_admins_handler.setFormatter(logging.Formatter('%(levelname)s %(asctime)s %(module)s %(message)s'))
+#
+# root_logger = logging.getLogger('')
+# root_logger.addHandler(file_general_handler)
+# root_logger.addHandler(file_errors_handler)
+# root_logger.addHandler(file_security_handler)
+# root_logger.addHandler(email_admins_handler)
+# root_logger.addHandler(console_handler)
+#
+# root_logger.setLevel(logging.DEBUG)
+#
+# root_logger.error("Test error message")
