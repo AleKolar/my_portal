@@ -266,14 +266,6 @@ class PostCreate(LoginRequiredMixin, CreateView):
         send_email_notification_to_subscribers.delay(post_name, post_content, created, post.id)
         return super().form_valid(form)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['object_list'] = []  # Add an empty object_list attribute
-        return context
-
-    def get(self, request, *args, **kwargs):
-        return render(request, self.template_name, self.get_context_data())
-
 
 class PostUpdate(LoginRequiredMixin, UpdateView):
     model = Post
