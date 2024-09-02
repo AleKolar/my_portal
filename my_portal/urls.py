@@ -21,6 +21,7 @@ from django.shortcuts import redirect
 from django.template.defaulttags import url
 
 from django.urls import path, include
+from django.views.generic import TemplateView
 
 from news import views
 from news.views import subscribe_news, subscribe_articles
@@ -153,6 +154,30 @@ urlpatterns = [
 
     path('i18n/', include('django.conf.urls.i18n')),
     path('Index/', views.Index.as_view(), name='index_msg'),
+
+
+    path('swagger-ui/', TemplateView.as_view(
+       template_name='swagger-ui.html',
+       extra_context={'schema_url':'openapi-schema'}), name='swagger-ui'),
+
+
+    path('authors/', views.AuthorViewSet.as_view({'get': 'list', 'post': 'create'}), name='author-list'),
+    path('authors/<int:pk>/', views.AuthorViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}),
+         name='author-detail'),
+
+    path('posts/', views.PostViewSet.as_view({'get': 'list', 'post': 'create'}), name='post-list'),
+    path('posts/<int:pk>/', views.PostViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}),
+         name='post-detail'),
+
+    path('comments/', views.CommentViewSet.as_view({'get': 'list', 'post': 'create'}), name='comment-list'),
+    path('comments/<int:pk>/', views.CommentViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}),
+         name='comment-detail'),
+
+    path('categories/', views.CategoryViewSet.as_view({'get': 'list', 'post': 'create'}), name='category-list'),
+    path('categories/<int:pk>/',
+         views.CategoryViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}),
+         name='category-detail'),
+
 
 
     ]

@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'django_apscheduler',
 
     'django.contrib.humanize',
+    'rest_framework',
 
 ]
 

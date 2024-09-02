@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework import serializers
+from rest_framework import serializers, viewsets
 from rest_framework.request import Request
 
 from .filters import PostFilter
@@ -20,7 +20,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
 from django.views.generic import View
 
-from .serializer import PostSerializer, CommentSerializer
+from .serializer import PostSerializer, CommentSerializer, CategorySerializer, AuthorSerializer
 from .tasks import send_email_notification_to_subscribers
 from django.forms.models import model_to_dict
 
@@ -309,3 +309,20 @@ def subscribe_articles(request):
 def q_news(request):
     posts = Post.objects.all()
     return render(request, 'q_news.html', {'posts': posts})
+
+
+class AuthorViewSet(viewsets.ModelViewSet):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
+
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
