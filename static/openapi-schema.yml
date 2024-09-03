@@ -1,0 +1,77 @@
+openapi: 3.0.0
+info:
+  title: Django App API
+  version: 1.0.0
+paths:
+  /api/authors:
+    get:
+      summary: Retrieve a list of authors
+      responses:
+        '200':
+          description: A list of authors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Author'
+  /api/posts/news:
+    get:
+      summary: Retrieve a list of news posts
+      responses:
+        '200':
+          description: A list of news posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+  /api/posts/articles:
+    get:
+      summary: Retrieve a list of article posts
+      responses:
+        '200':
+          description: A list of article posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+  /api/comments:
+    get:
+      summary: Retrieve a list of comments
+      responses:
+        '200':
+          description: A list of comments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+  components:
+    schemas:
+      Author:
+        type: object
+        properties:
+          user:
+            $ref: '#/components/schemas/CustomUser'
+          rating:
+            type: integer
+      Post:
+        type: object
+        properties:
+        # Define properties for Post model here
+      Comment:
+        type: object
+        properties:
+        # Define properties for Comment model here
+      CustomUser:
+        type: object
+        properties:
+          username:
+            type: string
+          email:
+            type: string

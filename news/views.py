@@ -97,32 +97,6 @@ def articles_full_detail(request, id):
                   {'post': post_info, 'id': id, 'comment_form': form, 'comments': comment_data})
 
 
-def articles_full_detail(request, id):
-    post = get_object_or_404(Post, id=id)
-    post_info = PostSerializer(post).data
-
-    comments = Comment.objects.filter(post=post).order_by('-created_at')
-    comment_data = CommentSerializer(comments, many=True).data
-
-    if request.method == 'POST':
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            new_comment = form.save(commit=False)
-            new_comment.post = post
-            new_comment.user = request.user
-            author_instance = Author.objects.get(user=request.user)
-            new_comment.author = author_instance
-            new_comment.save()
-            messages.success(request, "Comment added successfully!")
-
-            return redirect('articles_full_detail', id=id)
-    else:
-        form = CommentForm()
-
-    return render(request, 'articles_full_detail.html',
-                  {'post': post_info, 'id': id, 'comment_form': form, 'comments': comment_data})
-
-
 @method_decorator(login_required, name='dispatch')
 class NewsListView(ListView):
     model = Post
@@ -315,13 +289,16 @@ class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
 
+
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
 
+
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
