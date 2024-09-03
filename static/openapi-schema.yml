@@ -53,6 +53,15 @@ paths:
                   $ref: '#/components/schemas/Comment'
 components:
   schemas:
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+        text:
+          type: string
+        user:
+          $ref: '#/components/schemas/CustomUser'
     Author:
       type: object
       properties:
@@ -63,11 +72,21 @@ components:
     Post:
       type: object
       properties:
-        # Define properties for Post model here
-    Comment:
-      type: object
-      properties:
-        # Define properties for Comment model here
+        id:
+          type: integer
+          description: The unique identifier for the post
+        title:
+          type: string
+          description: The title of the post
+        content:
+          type: string
+          description: The content of the post
+        author:
+          $ref: '#/components/schemas/Author'
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time when the post was created
     CustomUser:
       type: object
       properties:
