@@ -51,27 +51,28 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Comment'
-  components:
-    schemas:
-      Author:
-        type: object
-        properties:
-          user:
-            $ref: '#/components/schemas/CustomUser'
-          rating:
-            type: integer
-      Post:
-        type: object
-        properties:
+components:
+  schemas:
+    Author:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/CustomUser'
+        rating:
+          type: integer
+    Post:
+      type: object
+      properties:
         # Define properties for Post model here
-      Comment:
-        type: object
-        properties:
+    Comment:
+      type: object
+      properties:
         # Define properties for Comment model here
-      CustomUser:
-        type: object
-        properties:
-          username:
-            type: string
-          email:
-            type: string
+    CustomUser:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+

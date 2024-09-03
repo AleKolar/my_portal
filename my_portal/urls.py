@@ -155,10 +155,9 @@ urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
     path('Index/', views.Index.as_view(), name='index_msg'),
 
-
     path('swagger-ui/', TemplateView.as_view(
-       template_name='swagger-ui.html',
-       extra_context={'schema_url':'openapi-schema'}), name='swagger-ui'),
+        template_name='swagger-ui.html',
+        extra_context={'schema_url': '/static/openapi-schema.yml'}), name='swagger-ui'),
 
 
     path('authors/', views.AuthorViewSet.as_view({'get': 'list', 'post': 'create'}), name='author-list'),
